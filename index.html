@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Thai Vowel Chart</title>
+  <meta name="description" content="Interactive IPA chart of Thai vowels with audio">
+  <meta name="theme-color" content="#f6f3ec" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#16181c" media="(prefers-color-scheme: dark)">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&family=Noto+Sans+Thai:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Thai Vowels <span class="thai">สระไทย</span></h1>
+      <p class="hint">Tap any vowel to hear it. <span class="key key-short">short</span> <span class="key key-long">long</span></p>
+    </header>
+
+    <section class="chart-wrap" aria-label="Vowel chart">
+      <div class="axis-labels" aria-hidden="true"><span>front</span><span>central</span><span>back</span></div>
+      <svg id="chart" viewBox="0 0 490 360" role="group" aria-label="Thai monophthongs on the IPA vowel trapezoid"></svg>
+    </section>
+
+    <section id="detail" class="detail" aria-live="polite">
+      <p class="detail-empty">Select a vowel to see its details.</p>
+    </section>
+
+    <section>
+      <h2>Diphthongs</h2>
+      <div id="diphthongs" class="cards"></div>
+    </section>
+
+    <section>
+      <h2>Other vowel signs</h2>
+      <div id="specials" class="cards"></div>
+    </section>
+
+    <footer>
+      <label class="slow-toggle"><input type="checkbox" id="slow"> Slow playback</label>
+    </footer>
+  </main>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
