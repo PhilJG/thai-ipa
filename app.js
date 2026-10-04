@@ -232,6 +232,29 @@
     }
   }
 
+  // ---------- Theme ----------
+  const themeBtn = document.getElementById('theme-toggle');
+  const root = document.documentElement;
+  const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
+  const isDark = () => (root.dataset.theme ? root.dataset.theme === 'dark' : systemDark.matches);
+
+  function syncThemeUI() {
+    const dark = isDark();
+    themeBtn.textContent = dark ? '☀️' : '🌙';
+    themeBtn.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+    const color = getComputedStyle(root).getPropertyValue('--bg').trim();
+    document.querySelectorAll('meta[name="theme-color"]').forEach((m) => m.setAttribute('content', color));
+  }
+
+  themeBtn.addEventListener('click', () => {
+    const next = isDark() ? 'light' : 'dark';
+    root.dataset.theme = next;
+    try { localStorage.setItem('theme', next); } catch (e) {}
+    syncThemeUI();
+  });
+  systemDark.addEventListener('change', syncThemeUI);
+
   drawChart();
   drawCards();
+  syncThemeUI();
 })();

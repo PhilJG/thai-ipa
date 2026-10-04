@@ -14,10 +14,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&family=Noto+Sans+Thai:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <script>
+    // Apply a saved theme before first paint to avoid a flash.
+    try { const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
 </head>
 <body>
   <main>
     <header>
+      <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode"></button>
       <h1>Thai Vowels <span class="thai">สระไทย</span></h1>
       <p class="hint">Tap any vowel to hear it. <span class="key key-short">short</span> <span class="key key-long">long</span></p>
     </header>

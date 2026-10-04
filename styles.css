@@ -14,7 +14,7 @@
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg: #16181c;
     --surface: #1f2228;
     --ink: #e8e6e1;
@@ -28,6 +28,20 @@
     --focus: #b794ff;
     color-scheme: dark;
   }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c;
+  --surface: #1f2228;
+  --ink: #e8e6e1;
+  --muted: #9aa0a8;
+  --line: #d6d2c8;
+  --grid: #4a4e56;
+  --short: #7aa2ff;
+  --short-bg: #1d2a47;
+  --long: #ff9a66;
+  --long-bg: #45281a;
+  --focus: #b794ff;
+  color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
@@ -49,7 +63,15 @@ main {
 
 .thai, [lang="th"] { font-family: "Noto Sans Thai", "Noto Sans", system-ui, sans-serif; }
 
+header { position: relative; padding-right: 52px; }
 h1 { font-size: 1.5rem; margin: 0 0 4px; }
+.theme-toggle {
+  position: absolute; top: 0; right: 0;
+  width: 44px; height: 44px; padding: 0;
+  display: grid; place-items: center;
+  font-size: 1.2rem; border-radius: 50%;
+  background: var(--surface);
+}
 h1 .thai { color: var(--muted); font-weight: 400; margin-left: 6px; }
 h2 { font-size: 1.05rem; margin: 28px 0 10px; color: var(--muted); font-weight: 600; letter-spacing: .02em; }
 .hint { margin: 0 0 12px; color: var(--muted); font-size: .9rem; }
