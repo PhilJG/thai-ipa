@@ -9,6 +9,8 @@
     noun: 'word',
     items: VOCAB,
     defaultNew: 8,
+    reviewHref: (item) => `#review=${item.id}`,
+    reviewLabel: 'look it up in the word list',
 
     prompt(item, dir) {
       if (dir === 'te') return `<div class="prompt-thai" lang="th">${item.thai}</div>${playBtn}`;

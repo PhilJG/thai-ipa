@@ -17,6 +17,9 @@
     noun: 'sentence',
     items: SENTENCES,
     defaultNew: 4,
+    reviewLabel: 'review its words',
+    // Opens the Words page with this sentence's vocabulary highlighted.
+    reviewHref: (item) => `words.html#review=${item.words.map((w) => VOCAB.find((v) => v.thai === w)).filter(Boolean).map((v) => v.id).join(',')}`,
 
     prompt(item, dir) {
       if (dir === 'te') return `<div class="prompt-thai prompt-sentence" lang="th">${item.thai}</div>${playBtn}`;

@@ -351,8 +351,10 @@ button:disabled { opacity: .45; cursor: default; }
 .prompt-note { width: 100%; color: var(--muted); font-size: .9rem; }
 .play-btn { min-height: 40px; padding: 4px 10px; font-size: 1.1rem; background: var(--bg); }
 
-.qc-study { background: var(--short-bg); border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; }
-.qc-study-label { font-size: .8rem; color: var(--short); font-weight: 600; margin-bottom: 4px; }
+.qc-new { background: var(--short-bg); color: var(--ink); border-radius: 10px; padding: 8px 12px; margin-bottom: 12px; font-size: .9rem; }
+.review-link { color: var(--short); font-weight: 600; white-space: nowrap; }
+.quiz-list tr.review-hl td { background: var(--short-bg); }
+.quiz-list tr.review-hl td:first-child { box-shadow: inset 4px 0 0 var(--short); }
 
 .qc-form { display: flex; gap: 8px; }
 .qc-input {

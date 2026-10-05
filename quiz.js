@@ -7,6 +7,7 @@
 //   defaultNew,       // new cards per session
 //   prompt(item, dir), answer(item), check(input, item, dir),
 //   hints(item, dir, ctx) -> [{ label, free?, run(out) }],
+//   reviewHref(item)  // link to the word list for a new card (answer is never pre-shown)
 // })
 const Quiz = (() => {
   const DIR_LABEL = { te: 'Thai → English', et: 'English → Thai' };
@@ -110,7 +111,8 @@ const Quiz = (() => {
         <div class="qc-top">${badge}<span class="qc-dir">${DIR_LABEL[dir]}</span>
           <span class="qc-left">${session.queue.length + 1} left</span></div>
         <div class="qc-prompt">${cfg.prompt(item, dir)}</div>
-        ${isNew ? `<div class="qc-study"><div class="qc-study-label">New ${cfg.noun} — study it, then type it below</div>${cfg.answer(item)}</div>` : ''}
+        ${isNew ? `<div class="qc-new">First time seeing this ${cfg.noun}? Have a go, use a hint, or
+          <a class="review-link" href="${cfg.reviewHref(item)}">${cfg.reviewLabel} →</a></div>` : ''}
         <form class="qc-form" autocomplete="off">
           <input class="qc-input" type="text" ${thaiInput ? 'lang="th"' : 'lang="en"'}
             placeholder="${thaiInput ? 'พิมพ์ภาษาไทย · type in Thai' : 'Type the English'}"
@@ -141,7 +143,6 @@ const Quiz = (() => {
           b.classList.add('used');
           h.run(hintOut);
         }, 'hint-btn');
-        if (isNew) b.disabled = !h.free;
         hintBar.append(b);
       }
 
@@ -181,8 +182,6 @@ const Quiz = (() => {
       const actions = fb.querySelector('.actions');
       actions.append(App.button('Next →', () => commit(), 'primary'));
       if (!res.ok) actions.append(App.button('I was right', () => commit(true)));
-      const study = cardEl.querySelector('.qc-study');
-      if (study) study.hidden = true;
       fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       playItem(current.item);
     }
@@ -199,7 +198,7 @@ const Quiz = (() => {
       if (!session.seen.has(current.id)) {
         session.seen.add(current.id);
         session.answered++;
-        if (g !== 'again' && !current.isNew) session.firstTry++;
+        if (g !== 'again') session.firstTry++;
       }
       let requeue = null;
       if (session.practice) {
@@ -225,7 +224,7 @@ const Quiz = (() => {
       cardEl.innerHTML = `
         <div class="qc-done">
           <div class="done-title">${session.answered ? 'Session complete 🎉' : 'All caught up'}</div>
-          ${session.answered ? `<p>${session.firstTry} reviewed correctly first time · ${session.answered} ${cfg.noun}s practised</p>` : ''}
+          ${session.answered ? `<p>${session.firstTry} of ${session.answered} ${cfg.noun}s right first time</p>` : ''}
           <p class="muted">${nd ? `Next review ${SRS.describeDue(nd)}.` : unseen ? `No reviews due yet.` : ''}
             ${unseen ? `${unseen} ${cfg.noun}${unseen === 1 ? '' : 's'} not started.` : ''}</p>
           <div class="actions"></div>
@@ -249,7 +248,7 @@ const Quiz = (() => {
       listEl.querySelector('summary .count').textContent = items.length;
       const tbody = listEl.querySelector('tbody');
       tbody.innerHTML = items.map((i) => `
-        <tr>
+        <tr data-id="${i.id}">
           <td><button type="button" class="list-play" data-id="${i.id}" aria-label="Play ${esc(i.thai)}"><span lang="th">${i.thai}</span></button></td>
           <td class="muted">${i.rom}</td>
           <td>${esc(i.en[0])}</td>
@@ -258,7 +257,22 @@ const Quiz = (() => {
         </tr>`).join('');
       tbody.querySelectorAll('.list-play').forEach((b) =>
         b.addEventListener('click', () => playItem(byId.get(b.dataset.id))));
+      highlightReview();
     }
+
+    // "#review=v-kin,v-chop" opens the list with those rows highlighted.
+    function highlightReview() {
+      const m = location.hash.match(/^#review=(.+)$/);
+      const ids = m ? decodeURIComponent(m[1]).split(',') : [];
+      const rows = [...listEl.querySelectorAll('tbody tr')];
+      rows.forEach((r) => r.classList.toggle('review-hl', ids.includes(r.dataset.id)));
+      const first = rows.find((r) => r.classList.contains('review-hl'));
+      if (first) {
+        listEl.open = true;
+        first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+    window.addEventListener('hashchange', highlightReview);
 
     // ---------- Backup ----------
     function setupBackup() {

@@ -1,8 +1,8 @@
 // Spaced-repetition scheduling (a small SM-2 variant).
 //
 // A card the learner has never seen is "new" and has no row in the database.
-// New cards are first shown with the answer, then must be recalled within the session
-// ("learning") before graduating to "review", where intervals grow by the ease factor.
+// Recalled correctly on first sight, it goes straight to "review"; otherwise it stays
+// "learning" and comes back within the session. Review intervals grow by the ease factor.
 const SRS = (() => {
   const DAY = 24 * 60 * 60 * 1000;
   const MIN_EASE = 1.3, MAX_EASE = 3.0;
@@ -17,17 +17,13 @@ const SRS = (() => {
     const c = { ...card, reps: card.reps + 1, last: now };
     let requeue = null;
 
-    if (c.state === 'new') {
-      // First exposure: the answer was shown, so just move it into learning.
-      c.state = 'learning';
-      c.due = now;
-      requeue = g === 'again' ? 2 : 3;
-    } else if (c.state === 'learning') {
+    if (c.state === 'new' || c.state === 'learning') {
       if (g === 'good') {
         c.state = 'review';
         c.interval = Math.max(1, c.interval);
         c.due = now + c.interval * DAY;
       } else {
+        c.state = 'learning';
         c.due = now;
         requeue = g === 'again' ? 2 : 4;
       }
