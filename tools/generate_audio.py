@@ -15,7 +15,7 @@ from gtts import gTTS
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 AUDIO = ROOT / "audio"
-DATA_FILES = ["data.js", "consonants-data.js"]
+DATA_FILES = ["data.js", "consonants-data.js", "vocab-data.js"]
 
 ID = re.compile(r"\bid: '([\w-]+)'")
 THAI = re.compile(r"\bthai: '([^']+)'")

@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Thai Words</title>
+  <meta name="description" content="Spaced-repetition vocabulary quiz: type Thai and English">
+  <meta name="theme-color" content="#f6f3ec" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#16181c" media="(prefers-color-scheme: dark)">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&family=Noto+Sans+Thai:wght@400;600&family=Noto+Sans+Thai+Looped:wght@400;600&family=Noto+Serif+Thai:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    // Apply a saved theme before first paint to avoid a flash.
+    try {
+      const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t;
+      const f = localStorage.getItem('thaiFont'); if (f) document.documentElement.dataset.thaiFont = f;
+    } catch (e) {}
+  </script>
+</head>
+<body>
+  <nav class="topnav" aria-label="Sections">
+    <div class="topnav-inner">
+      <div class="tabs">
+        <a class="tab" href="./">Vowels <span class="thai">สระ</span></a>
+        <a class="tab" href="consonants.html">Consonants <span class="thai">พยัญชนะ</span></a>
+        <a class="tab" href="words.html" aria-current="page">Words <span class="thai">คำศัพท์</span></a>
+        <a class="tab" href="sentences.html">Sentences <span class="thai">ประโยค</span></a>
+      </div>
+      <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode"></button>
+    </div>
+  </nav>
+  <main>
+    <header>
+      <h1>Words <span class="thai">คำศัพท์</span></h1>
+      <p class="hint">Type the answer. Words come back just before you'd forget them.</p>
+      <div class="font-picker">
+        <span id="font-label">Thai font</span>
+        <div class="segmented" role="group" aria-labelledby="font-label">
+          <button type="button" data-font="looped" style="--sample-font: 'Noto Sans Thai Looped'"><span class="sample" lang="th">กอ</span>Looped</button>
+          <button type="button" data-font="looped-serif" style="--sample-font: 'Noto Serif Thai'"><span class="sample" lang="th">กอ</span>Serif</button>
+          <button type="button" data-font="modern" style="--sample-font: 'Noto Sans Thai'"><span class="sample" lang="th">กอ</span>Modern</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="quiz-toolbar">
+      <div class="segmented dir-picker" role="group" aria-label="Direction">
+        <button type="button" data-dir="both">Both</button>
+        <button type="button" data-dir="te"><span lang="th">ไทย</span> → Eng</button>
+        <button type="button" data-dir="et">Eng → <span lang="th">ไทย</span></button>
+      </div>
+      <label class="new-limit">New per session
+        <select id="new-limit">
+          <option value="2">2</option><option value="4">4</option><option value="6">6</option>
+          <option value="8">8</option><option value="10">10</option><option value="15">15</option><option value="20">20</option>
+        </select>
+      </label>
+    </div>
+
+    <div id="quiz-stats" class="quiz-stats"></div>
+    <section id="quiz-card" class="quiz-card" aria-live="polite"><p class="muted">Loading…</p></section>
+
+    <details id="quiz-list" class="quiz-list">
+      <summary>All words (<span class="count"></span>) and your progress</summary>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Thai</th><th>Say</th><th>English</th><th><span lang="th">ไทย</span>→Eng</th><th>Eng→<span lang="th">ไทย</span></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </details>
+
+    <section class="backup">
+      <h2>Your progress</h2>
+      <p class="hint">Progress is saved in a SQLite database on this device. Export it to back up or move to another device.</p>
+      <div class="actions">
+        <button type="button" id="export-btn">Export progress</button>
+        <button type="button" id="import-btn">Import progress</button>
+        <input type="file" id="import-file" accept=".sqlite,.db,application/x-sqlite3,application/octet-stream" hidden>
+        <button type="button" id="reset-btn">Reset progress</button>
+      </div>
+      <p id="backup-msg" class="hint" aria-live="polite"></p>
+    </section>
+
+    <footer>
+      <label class="slow-toggle"><input type="checkbox" id="slow"> Slow playback</label>
+    </footer>
+  </main>
+
+  <script src="lib/sql-wasm.js"></script>
+  <script src="vocab-data.js"></script>
+  <script src="common.js"></script>
+  <script src="store.js"></script>
+  <script src="srs.js"></script>
+  <script src="check.js"></script>
+  <script src="quiz.js"></script>
+  <script src="words.js"></script>
+</body>
+</html>
