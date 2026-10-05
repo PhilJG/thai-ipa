@@ -24,16 +24,7 @@
 
   const chart = document.getElementById('chart');
   const detail = document.getElementById('detail');
-  const slow = document.getElementById('slow');
-
-  // sound id -> { sound, length, group, els: [] }
-  const registry = new Map();
-  let selectedId = null;
-
-  function register(sound, length, group, el) {
-    if (!registry.has(sound.id)) registry.set(sound.id, { sound, length, group, els: [] });
-    registry.get(sound.id).els.push(el);
-  }
+  const { register, select, playFile, playSequence, button } = App;
 
   function svg(tag, attrs = {}, parent) {
     const el = document.createElementNS(SVG_NS, tag);
@@ -42,89 +33,17 @@
     return el;
   }
 
-  // ---------- Audio ----------
-  const audioCache = new Map();
-  let current = null;
-
-  function stopCurrent() {
-    if (current) {
-      current.audio.pause();
-      current.audio.currentTime = 0;
-      current.done();
-    }
-    if (window.speechSynthesis) speechSynthesis.cancel();
-  }
-
-  function speakFallback(text) {
-    return new Promise((resolve) => {
-      if (!window.speechSynthesis) return resolve();
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = 'th-TH';
-      u.rate = slow.checked ? 0.6 : 0.9;
-      u.onend = u.onerror = resolve;
-      speechSynthesis.speak(u);
-    });
-  }
-
-  // Plays audio/<file>.mp3; falls back to the device's Thai voice if the file fails.
-  function playFile(file, fallbackText, id) {
-    stopCurrent();
-    let audio = audioCache.get(file);
-    if (!audio) {
-      audio = new Audio(`audio/${file}.mp3`);
-      audio.preload = 'auto';
-      audioCache.set(file, audio);
-    }
-    audio.playbackRate = slow.checked ? 0.65 : 1;
-    audio.preservesPitch = true;
-    setPlaying(id, true);
-    return new Promise((resolve) => {
-      const done = () => {
-        audio.onended = audio.onerror = null;
-        if (current && current.audio === audio) current = null;
-        setPlaying(id, false);
-        resolve();
-      };
-      current = { audio, done };
-      audio.onended = done;
-      audio.onerror = () => { done(); speakFallback(fallbackText); };
-      audio.play().catch(() => { done(); speakFallback(fallbackText); });
-    });
-  }
-
   const playSound = (sound) => playFile(sound.id, sound.thai, sound.id);
   const playExample = (sound) => playFile(`${sound.id}-ex`, sound.ex.thai, sound.id);
 
-  async function playPair(group) {
-    await playSound(group.short);
-    await new Promise((r) => setTimeout(r, 350));
-    await playSound(group.long);
-  }
+  const playPair = (group) => playSequence(
+    [group.short, group.long].map((s) => [s.id, s.thai, s.id]));
 
-  function setPlaying(id, on) {
-    const entry = registry.get(id);
-    if (entry) entry.els.forEach((el) => el.classList.toggle('playing', on));
-  }
-
-  // ---------- Selection ----------
-  function select(id, { play = true, scroll = false } = {}) {
-    if (selectedId) registry.get(selectedId).els.forEach((el) => el.classList.remove('selected'));
-    selectedId = id;
-    const entry = registry.get(id);
-    entry.els.forEach((el) => el.classList.add('selected'));
+  App.onSelect((entry, { play = true, scroll = false }) => {
     renderDetail(entry);
     if (scroll) detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     if (play) playSound(entry.sound);
-  }
-
-  function button(html, onClick, cls = '') {
-    const b = document.createElement('button');
-    b.type = 'button';
-    b.className = cls;
-    b.innerHTML = html;
-    b.addEventListener('click', onClick);
-    return b;
-  }
+  });
 
   function renderDetail({ sound, length, group }) {
     detail.className = `detail ${length ? `is-${length}` : ''}`;
@@ -196,7 +115,7 @@
     ipa.textContent = sound.ipa;
     const thai = svg('text', { class: 'thai', x: x + PILL_W - 10, y: y + PILL_H / 2, 'text-anchor': 'end' }, g);
     thai.textContent = sound.thai;
-    register(sound, length, group, g);
+    register(sound.id, { sound, length, group }, g);
     g.addEventListener('click', () => select(sound.id, { scroll: true }));
     g.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(sound.id); }
@@ -209,7 +128,7 @@
       `<span class="ipa">[${sound.ipa}]</span><span class="thai" lang="th">${sound.thai}</span>`,
       () => select(sound.id),
       `chip ${length || 'long'}`);
-    register(sound, length, group, b);
+    register(sound.id, { sound, length, group }, b);
     return b;
   }
 
@@ -232,44 +151,6 @@
     }
   }
 
-  // ---------- Theme ----------
-  const themeBtn = document.getElementById('theme-toggle');
-  const root = document.documentElement;
-  const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
-  const isDark = () => (root.dataset.theme ? root.dataset.theme === 'dark' : systemDark.matches);
-
-  function syncThemeUI() {
-    const dark = isDark();
-    themeBtn.textContent = dark ? '☀️' : '🌙';
-    themeBtn.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
-    const color = getComputedStyle(root).getPropertyValue('--bg').trim();
-    document.querySelectorAll('meta[name="theme-color"]').forEach((m) => m.setAttribute('content', color));
-  }
-
-  themeBtn.addEventListener('click', () => {
-    const next = isDark() ? 'light' : 'dark';
-    root.dataset.theme = next;
-    try { localStorage.setItem('theme', next); } catch (e) {}
-    syncThemeUI();
-  });
-  systemDark.addEventListener('change', syncThemeUI);
-
-  // ---------- Thai font ----------
-  const fontButtons = document.querySelectorAll('.font-picker [data-font]');
-
-  function syncFontUI() {
-    const current = root.dataset.thaiFont || 'looped';
-    fontButtons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.font === current)));
-  }
-
-  fontButtons.forEach((b) => b.addEventListener('click', () => {
-    root.dataset.thaiFont = b.dataset.font;
-    try { localStorage.setItem('thaiFont', b.dataset.font); } catch (e) {}
-    syncFontUI();
-  }));
-
   drawChart();
   drawCards();
-  syncThemeUI();
-  syncFontUI();
 })();
