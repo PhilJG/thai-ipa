@@ -12,11 +12,14 @@
   <link rel="apple-touch-icon" href="icon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&family=Noto+Sans+Thai:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600&family=Noto+Sans+Thai:wght@400;600&family=Noto+Sans+Thai+Looped:wght@400;600&family=Noto+Serif+Thai:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <script>
     // Apply a saved theme before first paint to avoid a flash.
-    try { const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+    try {
+      const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t;
+      const f = localStorage.getItem('thaiFont'); if (f) document.documentElement.dataset.thaiFont = f;
+    } catch (e) {}
   </script>
 </head>
 <body>
@@ -25,6 +28,14 @@
       <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode"></button>
       <h1>Thai Vowels <span class="thai">สระไทย</span></h1>
       <p class="hint">Tap any vowel to hear it. <span class="key key-short">short</span> <span class="key key-long">long</span></p>
+      <div class="font-picker">
+        <span id="font-label">Thai font</span>
+        <div class="segmented" role="group" aria-labelledby="font-label">
+          <button type="button" data-font="looped" style="--sample-font: 'Noto Sans Thai Looped'"><span class="sample" lang="th">กอ</span>Looped</button>
+          <button type="button" data-font="looped-serif" style="--sample-font: 'Noto Serif Thai'"><span class="sample" lang="th">กอ</span>Serif</button>
+          <button type="button" data-font="modern" style="--sample-font: 'Noto Sans Thai'"><span class="sample" lang="th">กอ</span>Modern</button>
+        </div>
+      </div>
     </header>
 
     <section class="chart-wrap" aria-label="Vowel chart">

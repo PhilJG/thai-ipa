@@ -254,7 +254,22 @@
   });
   systemDark.addEventListener('change', syncThemeUI);
 
+  // ---------- Thai font ----------
+  const fontButtons = document.querySelectorAll('.font-picker [data-font]');
+
+  function syncFontUI() {
+    const current = root.dataset.thaiFont || 'looped';
+    fontButtons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.font === current)));
+  }
+
+  fontButtons.forEach((b) => b.addEventListener('click', () => {
+    root.dataset.thaiFont = b.dataset.font;
+    try { localStorage.setItem('thaiFont', b.dataset.font); } catch (e) {}
+    syncFontUI();
+  }));
+
   drawChart();
   drawCards();
   syncThemeUI();
+  syncFontUI();
 })();
