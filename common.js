@@ -136,6 +136,50 @@ const App = (() => {
     }
   }
 
+  // ---------- Sound effects ----------
+  // Short synthesized chimes for right / wrong answers (Web Audio, so there are no files to load).
+  // [frequency Hz, start s, length s] per note.
+  const SFX = {
+    right: { wave: 'sine', notes: [[659.25, 0, 0.14], [987.77, 0.09, 0.32]] }, // E5 -> B5, rising
+    wrong: { wave: 'triangle', notes: [[233.08, 0, 0.16], [185, 0.13, 0.34]] }, // B♭3 -> F♯3, falling
+  };
+  const sfxToggle = document.getElementById('sfx');
+  let sfxOn = true;
+  try { sfxOn = localStorage.getItem('sfx') !== 'off'; } catch (e) {}
+  if (sfxToggle) {
+    sfxToggle.checked = sfxOn;
+    sfxToggle.addEventListener('change', () => {
+      sfxOn = sfxToggle.checked;
+      try { localStorage.setItem('sfx', sfxOn ? 'on' : 'off'); } catch (e) {}
+    });
+  }
+  let audioCtx = null;
+
+  // Resolves when the effect has finished, so speech can follow without overlapping it.
+  function sfx(kind) {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!sfxOn || !Ctx) return Promise.resolve();
+    audioCtx = audioCtx || new Ctx();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const { wave, notes } = SFX[kind];
+    const t0 = audioCtx.currentTime + 0.02;
+    let end = 0;
+    for (const [freq, start, len] of notes) {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = wave;
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.0001, t0 + start);
+      gain.gain.exponentialRampToValueAtTime(0.22, t0 + start + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + start + len);
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start(t0 + start);
+      osc.stop(t0 + start + len + 0.02);
+      end = Math.max(end, start + len);
+    }
+    return new Promise((resolve) => setTimeout(resolve, end * 1000 + 80));
+  }
+
   // Small contour drawings of each tone, like the — \ ^ / v marks on a tone chart.
   const TONE_PATHS = {
     mid: 'M3 7 H17',
@@ -193,5 +237,5 @@ const App = (() => {
   }));
   syncFontUI();
 
-  return { register, onSelect, select, playFile, playSequence, button, toneIcon, remember, recall, restorePosition };
+  return { register, onSelect, select, playFile, playSequence, button, toneIcon, sfx, remember, recall, restorePosition };
 })();

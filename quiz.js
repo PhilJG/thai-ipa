@@ -242,7 +242,9 @@ const Quiz = (() => {
       if (!res.ok) actions.append(App.button('I was right', () => commit(true)));
       if (!fresh) return;
       fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      playItem(current.item);
+      // Chime first, then the word, unless the learner has already moved on.
+      const shown = current;
+      App.sfx(res.ok ? 'right' : 'wrong').then(() => { if (current === shown) playItem(shown.item); });
     }
 
     function gradeFor(res, override) {

@@ -235,7 +235,7 @@ button .ex-rom { color: var(--muted); }
 .chip.selected { border-width: 3px; padding: 6.5px 10.5px; }
 .chip.playing { animation: pulse .6s ease-in-out infinite alternate; }
 
-footer { margin-top: 28px; color: var(--muted); font-size: .9rem; }
+footer { margin-top: 28px; color: var(--muted); font-size: .9rem; display: flex; flex-wrap: wrap; gap: 0 24px; }
 .slow-toggle { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; cursor: pointer; }
 .slow-toggle input { width: 20px; height: 20px; }
 

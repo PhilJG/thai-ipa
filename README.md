@@ -9,7 +9,8 @@ Interactive charts for learning Thai pronunciation, with audio.
 - **Tones** (`tones.html`): the five tones as pitch contours with their Thai names, words that
   differ only in tone, and the four tone marks with the tone each gives per consonant class.
 - **Words** (`words.html`): spaced-repetition quiz over the workbook vocabulary, typed answers
-  in both directions (Thai → English, English → Thai).
+  in both directions (Thai → English, English → Thai). A chime marks right and wrong answers
+  (synthesized with Web Audio; switch off with "Sound effects").
 - **Sentences** (`sentences.html`): translate the workbook sentences both ways, with hints
   (word bank, word-by-word gloss, pronunciation, audio).
 
