@@ -137,12 +137,11 @@ const App = (() => {
   }
 
   // ---------- Sound effects ----------
-  // Short synthesized chimes for right / wrong answers (Web Audio, so there are no files to load).
-  // [frequency Hz, start s, length s] per note.
-  const SFX = {
-    right: { wave: 'sine', notes: [[659.25, 0, 0.14], [987.77, 0.09, 0.32]] }, // E5 -> B5, rising
-    wrong: { wave: 'triangle', notes: [[233.08, 0, 0.16], [185, 0.13, 0.34]] }, // B♭3 -> F♯3, falling
-  };
+  // A bell for right answers and a buzzer for wrong ones (made by tools/generate_sfx.py).
+  // Played as ordinary audio, like the words, so an iPhone's silent switch doesn't mute them
+  // the way it mutes Web Audio.
+  const SFX = { right: 'audio/sfx-right.wav', wrong: 'audio/sfx-wrong.wav' };
+  const sfxAudio = {};
   const sfxToggle = document.getElementById('sfx');
   let sfxOn = true;
   try { sfxOn = localStorage.getItem('sfx') !== 'off'; } catch (e) {}
@@ -152,32 +151,27 @@ const App = (() => {
       sfxOn = sfxToggle.checked;
       try { localStorage.setItem('sfx', sfxOn ? 'on' : 'off'); } catch (e) {}
     });
+    for (const [kind, src] of Object.entries(SFX)) {
+      sfxAudio[kind] = new Audio(src);
+      sfxAudio[kind].preload = 'auto';
+    }
   }
-  let audioCtx = null;
 
   // Resolves when the effect has finished, so speech can follow without overlapping it.
   function sfx(kind) {
-    const Ctx = window.AudioContext || window.webkitAudioContext;
-    if (!sfxOn || !Ctx) return Promise.resolve();
-    audioCtx = audioCtx || new Ctx();
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-    const { wave, notes } = SFX[kind];
-    const t0 = audioCtx.currentTime + 0.02;
-    let end = 0;
-    for (const [freq, start, len] of notes) {
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = wave;
-      osc.frequency.value = freq;
-      gain.gain.setValueAtTime(0.0001, t0 + start);
-      gain.gain.exponentialRampToValueAtTime(0.22, t0 + start + 0.015);
-      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + start + len);
-      osc.connect(gain).connect(audioCtx.destination);
-      osc.start(t0 + start);
-      osc.stop(t0 + start + len + 0.02);
-      end = Math.max(end, start + len);
-    }
-    return new Promise((resolve) => setTimeout(resolve, end * 1000 + 80));
+    const audio = sfxAudio[kind];
+    if (!sfxOn || !audio) return Promise.resolve();
+    audio.currentTime = 0;
+    return new Promise((resolve) => {
+      const timer = setTimeout(finish, 1500); // don't hold up the word if `ended` never fires
+      function finish() {
+        clearTimeout(timer);
+        audio.onended = audio.onerror = null;
+        resolve();
+      }
+      audio.onended = audio.onerror = finish;
+      audio.play().catch(finish);
+    });
   }
 
   // Small contour drawings of each tone, like the — \ ^ / v marks on a tone chart.
