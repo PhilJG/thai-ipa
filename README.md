@@ -8,10 +8,10 @@ Interactive charts for learning Thai pronunciation, with audio.
   with initial and final sounds, plus the tone-rules table with every syllable playable.
 - **Tones** (`tones.html`): the five tones as pitch contours with their Thai names, words that
   differ only in tone, and the four tone marks with the tone each gives per consonant class.
-- **Words** (`words.html`): spaced-repetition quiz over the workbook vocabulary, typed answers
+- **Words** (`words.html`): spaced-repetition quiz over the workbook vocabulary, numbers 1–10 and everyday verbs; typed answers
   in both directions (Thai → English, English → Thai). A bell marks right answers and a buzzer
   wrong ones (switch off with "Sound effects").
-- **Sentences** (`sentences.html`): translate the workbook sentences both ways, with hints
+- **Sentences** (`sentences.html`): translate the workbook and everyday-verb sentences both ways, with hints
   (word bank, word-by-word gloss, pronunciation, audio).
 
 Quiz progress lives in a SQLite database in the browser (sql.js, persisted to IndexedDB),
@@ -31,7 +31,7 @@ Live at: https://philjg.github.io/thai-ipa/
 - `styles.css` – all styles
 - `data.js` – vowel inventory; `consonants-data.js` – consonants and tone rules;
   `tones-data.js` – tone names, tone marks and minimal sets;
-  `vocab-data.js` – workbook vocabulary and sentences
+  `vocab-data.js` – vocabulary and sentences
 - `audio/` – one mp3 per vowel (`<id>.mp3`) and per example word (`<id>-ex.mp3`)
 - `tools/generate_audio.py` – regenerates audio from the data files using Google TTS
 - `tools/generate_sfx.py` – synthesizes the bell and buzzer (`audio/sfx-*.wav`), standard library only
