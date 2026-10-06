@@ -12,6 +12,8 @@
 const Quiz = (() => {
   const DIR_LABEL = { te: 'Thai → English', et: 'English → Thai' };
   const DIR_SETTINGS = { both: ['te', 'et'], te: ['te'], et: ['et'] };
+  // An unfinished session is picked up again if you come back to the page within this time.
+  const SESSION_TTL = 12 * 60 * 60 * 1000;
 
   const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
@@ -93,11 +95,42 @@ const Quiz = (() => {
 
     function next() {
       if (!session.queue.length) return renderDone();
-      const id = session.queue.shift();
+      load(session.queue.shift());
+    }
+
+    // `saved` carries a restored card's hints, draft and (if already checked) its result.
+    function load(id, saved = {}) {
       const { item, dir } = parseId(id);
       const card = stored.get(id) || SRS.newCard(id);
-      current = { id, item, dir, card, isNew: card.state === 'new' && !session.practice, hintsUsed: false, result: null };
+      current = {
+        id, item, dir, card, isNew: card.state === 'new' && !session.practice,
+        hintsUsed: false, usedHints: [], shownHint: null, draft: '', answer: null, result: null, ...saved,
+      };
       renderQuestion();
+      saveSession();
+    }
+
+    // ---------- Remembered session ----------
+    function saveSession() {
+      const c = current;
+      App.remember('session', {
+        ts: Date.now(), dirs: dirSetting, practice: session.practice, queue: session.queue,
+        answered: session.answered, firstTry: session.firstTry, seen: [...session.seen],
+        current: { id: c.id, hintsUsed: c.hintsUsed, usedHints: c.usedHints, shownHint: c.shownHint,
+          draft: c.draft, answer: c.answer, result: c.result },
+      });
+    }
+
+    function restoreSession() {
+      const s = App.recall('session', null);
+      if (!s || !s.current || s.dirs !== dirSetting || Date.now() - s.ts > SESSION_TTL) return false;
+      const valid = (id) => { const p = parseId(id); return p.item && DIR_LABEL[p.dir]; };
+      if (![s.current.id, ...s.queue].every(valid)) return false;
+      session = { queue: s.queue, practice: s.practice, answered: s.answered, firstTry: s.firstTry, seen: new Set(s.seen) };
+      renderStats();
+      renderList();
+      load(s.current.id, s.current);
+      return true;
     }
 
     function renderQuestion() {
@@ -131,34 +164,59 @@ const Quiz = (() => {
 
       cardEl.querySelectorAll('[data-play]').forEach((b) => b.addEventListener('click', () => playItem(item)));
 
+      const setDraft = (text) => { input.value = text; input.focus(); input.dispatchEvent(new Event('input')); };
       const ctx = {
         input,
         play: () => playItem(item),
-        insert(text) { input.value += text; input.focus(); },
+        insert(text) { setDraft(input.value + text); },
+        clear() { setDraft(''); },
       };
-      for (const h of cfg.hints(item, dir, ctx)) {
+      const hints = cfg.hints(item, dir, ctx);
+      hints.forEach((h, i) => {
         const b = App.button(h.label, () => {
           if (current.result) return;
           if (!h.free) current.hintsUsed = true;
+          if (!current.usedHints.includes(i)) current.usedHints.push(i);
           b.classList.add('used');
+          const before = hintOut.innerHTML;
           h.run(hintOut);
+          if (hintOut.innerHTML !== before) current.shownHint = i;
+          saveSession();
         }, 'hint-btn');
+        if (current.usedHints.includes(i)) b.classList.add('used');
         hintBar.append(b);
-      }
+      });
+      if (current.shownHint != null) hints[current.shownHint].run(hintOut);
 
+      input.value = current.draft;
+      input.addEventListener('input', () => {
+        current.draft = input.value;
+        saveSession();
+      });
       form.addEventListener('submit', (e) => {
         e.preventDefault();
         if (current.result) commit();
         else submit(input.value);
       });
+      if (current.result) {
+        input.value = current.answer;
+        showResult(false);
+      }
       input.focus({ preventScroll: true });
     }
 
     function submit(answer) {
       if (!answer.trim()) return;
-      const res = cfg.check(answer, current.item, current.dir);
-      current.result = res;
+      current.result = cfg.check(answer, current.item, current.dir);
       current.answer = answer;
+      saveSession();
+      showResult(true);
+    }
+
+    // `fresh` is false when redrawing a result restored from a previous visit.
+    function showResult(fresh) {
+      const res = current.result;
+      const answer = current.answer;
       const input = cardEl.querySelector('.qc-input');
       input.readOnly = true;
       cardEl.querySelector('.qc-form .primary').textContent = 'Next';
@@ -182,6 +240,7 @@ const Quiz = (() => {
       const actions = fb.querySelector('.actions');
       actions.append(App.button('Next →', () => commit(), 'primary'));
       if (!res.ok) actions.append(App.button('I was right', () => commit(true)));
+      if (!fresh) return;
       fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       playItem(current.item);
     }
@@ -217,6 +276,7 @@ const Quiz = (() => {
 
     function renderDone() {
       current = null;
+      App.remember('session', undefined); // a finished session isn't resumed; the next visit starts fresh
       const ids = allIds();
       const nd = SRS.nextDue(ids, stored);
       const unseen = ids.filter((id) => !stored.has(id)).length;
@@ -243,6 +303,9 @@ const Quiz = (() => {
       const strength = c.interval >= 21 ? 'strong' : c.interval >= 4 ? 'ok' : 'weak';
       return `<span class="st st-${strength}" title="interval ${Math.round(c.interval)} days">${SRS.describeDue(c.due)}</span>`;
     }
+
+    listEl.open = App.recall('listOpen', false);
+    listEl.addEventListener('toggle', () => App.remember('listOpen', listEl.open));
 
     function renderList() {
       listEl.querySelector('summary .count').textContent = items.length;
@@ -330,7 +393,8 @@ const Quiz = (() => {
 
     setupToolbar();
     setupBackup();
-    startSession();
+    if (!restoreSession()) startSession();
+    App.restorePosition();
   }
 
   // Shared bits for page configs.

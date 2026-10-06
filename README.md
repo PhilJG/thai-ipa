@@ -13,6 +13,8 @@ Interactive charts for learning Thai pronunciation, with audio.
 
 Quiz progress lives in a SQLite database in the browser (sql.js, persisted to IndexedDB),
 so it survives closing the page. Export/import moves the `.sqlite` file between devices.
+Each page also remembers where you were (scroll position, selected sound, the card you're on
+and what you've typed) in `localStorage`, so switching tabs doesn't lose your place.
 
 Live at: https://philjg.github.io/thai-ipa/
 

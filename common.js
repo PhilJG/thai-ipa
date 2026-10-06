@@ -1,7 +1,41 @@
-// Shared by every page: audio playback, tap-to-select registry, theme and Thai font pickers.
+// Shared by every page: audio playback, tap-to-select registry, theme and Thai font pickers,
+// and the remembered position (scroll, selection, quiz session) for each page.
 const App = (() => {
   const root = document.documentElement;
   const slow = document.getElementById('slow');
+
+  // ---------- Remembered position ----------
+  // Each page keeps a small state object in localStorage, so switching tabs and coming
+  // back lands where you left off instead of at the top of a fresh page.
+  const pageKey = `pos:${location.pathname.split('/').pop() || 'index.html'}`;
+  let pageState = {};
+  try { pageState = JSON.parse(localStorage.getItem(pageKey)) || {}; } catch (e) {}
+
+  function remember(key, value) {
+    if (value === undefined) delete pageState[key];
+    else pageState[key] = value;
+    try { localStorage.setItem(pageKey, JSON.stringify(pageState)); } catch (e) {}
+  }
+  const recall = (key, fallback) => (key in pageState ? pageState[key] : fallback);
+
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  let scrollTimer = null;
+  let scrollReady = false; // don't record the top-of-page position before it's been restored
+  addEventListener('scroll', () => {
+    if (!scrollReady) return;
+    clearTimeout(scrollTimer);
+    scrollTimer = setTimeout(() => remember('scroll', Math.round(scrollY)), 150);
+  }, { passive: true });
+  addEventListener('pagehide', () => { if (scrollReady) remember('scroll', Math.round(scrollY)); });
+
+  // Called by each page once its content is drawn. A #hash link wins over the saved spot.
+  function restorePosition() {
+    const id = recall('selected', null);
+    if (id && registry.has(id)) select(id, { play: false });
+    const y = recall('scroll', 0);
+    if (y && !location.hash) scrollTo(0, y);
+    scrollReady = true;
+  }
 
   // ---------- Selection registry ----------
   // id -> { data, els: [] }. Every on-screen element for the same sound shares an id,
@@ -20,6 +54,7 @@ const App = (() => {
   function select(id, opts = {}) {
     if (selectedId) registry.get(selectedId).els.forEach((el) => el.classList.remove('selected'));
     selectedId = id;
+    remember('selected', id);
     const entry = registry.get(id);
     entry.els.forEach((el) => el.classList.add('selected'));
     selectHandler(entry.data, opts);
@@ -147,5 +182,5 @@ const App = (() => {
   }));
   syncFontUI();
 
-  return { register, onSelect, select, playFile, playSequence, button };
+  return { register, onSelect, select, playFile, playSequence, button, remember, recall, restorePosition };
 })();

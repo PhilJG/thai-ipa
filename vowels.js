@@ -153,4 +153,5 @@
 
   drawChart();
   drawCards();
+  App.restorePosition();
 })();

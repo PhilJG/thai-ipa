@@ -151,4 +151,5 @@
 
   drawClasses();
   drawToneTable();
+  App.restorePosition();
 })();

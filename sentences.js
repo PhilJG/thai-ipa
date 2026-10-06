@@ -58,7 +58,7 @@
             for (const w of shuffle([...item.words, ...distractors])) {
               bank.append(App.button(`<span lang="th">${w}</span>`, () => ctx.insert(w), 'bank-chip'));
             }
-            bank.append(App.button('Clear', () => { ctx.input.value = ''; ctx.input.focus(); }, 'bank-chip bank-clear'));
+            bank.append(App.button('Clear', () => ctx.clear(), 'bank-chip bank-clear'));
           },
         },
         pron,
