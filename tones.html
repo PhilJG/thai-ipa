@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Thai Consonants</title>
-  <meta name="description" content="Thai consonants by class, with tone rules and audio">
+  <title>Thai Tones</title>
+  <meta name="description" content="The five Thai tones and the four tone marks, with audio">
   <meta name="theme-color" content="#f6f3ec" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#16181c" media="(prefers-color-scheme: dark)">
   <link rel="manifest" href="manifest.json">
@@ -27,8 +27,8 @@
     <div class="topnav-inner">
       <div class="tabs">
         <a class="tab" href="./">Vowels <span class="thai">สระ</span></a>
-        <a class="tab" href="consonants.html" aria-current="page">Consonants <span class="thai">พยัญชนะ</span></a>
-        <a class="tab" href="tones.html">Tones <span class="thai">วรรณยุกต์</span></a>
+        <a class="tab" href="consonants.html">Consonants <span class="thai">พยัญชนะ</span></a>
+        <a class="tab" href="tones.html" aria-current="page">Tones <span class="thai">วรรณยุกต์</span></a>
         <a class="tab" href="words.html">Words <span class="thai">คำศัพท์</span></a>
         <a class="tab" href="sentences.html">Sentences <span class="thai">ประโยค</span></a>
       </div>
@@ -37,8 +37,8 @@
   </nav>
   <main>
     <header>
-      <h1>Thai Consonants <span class="thai">พยัญชนะ</span></h1>
-      <p class="hint">Tap a letter to hear its name. The class decides the tone.</p>
+      <h1>Tones <span class="thai">วรรณยุกต์</span></h1>
+      <p class="hint">Thai has five tones: the same syllable means different things at a different pitch. Tap anything to hear it.</p>
       <div class="font-picker">
         <span id="font-label">Thai font</span>
         <div class="segmented" role="group" aria-labelledby="font-label">
@@ -49,19 +49,33 @@
       </div>
     </header>
 
-    <section aria-labelledby="classes-h">
-      <h2 id="classes-h" class="visually-hidden">Consonants by class</h2>
-      <div id="classes"></div>
-      <div id="letter-detail" class="detail detail-sticky" aria-live="polite" hidden></div>
+    <section aria-labelledby="five-h">
+      <h2 id="five-h">The five tones</h2>
+      <div class="contour-wrap">
+        <svg id="contours" viewBox="0 0 340 190" role="img" aria-label="Pitch contour of each tone, from low (1) to high (5) over the length of the syllable"></svg>
+      </div>
+      <div id="tone-cards" class="tone-cards"></div>
     </section>
 
-    <section aria-labelledby="tones-h">
-      <h2 id="tones-h">Tone rules</h2>
-      <p class="hint">Tap a syllable to hear its tone. Non-stop finals: ง น ม ย ว · Stop finals: ก ด บ (and letters that sound like them).</p>
+    <section aria-labelledby="sets-h">
+      <h2 id="sets-h">Hear the difference</h2>
+      <p class="hint">Words that differ only in tone. Play a row to hear them side by side.</p>
+      <div id="tone-sets"></div>
+      <div id="twister" class="twister"></div>
+    </section>
+
+    <section aria-labelledby="marks-h">
+      <h2 id="marks-h">Tone marks</h2>
+      <p class="hint">A mark sits above the first consonant, but the tone it gives depends on that consonant's class.</p>
+      <div id="mark-cards" class="mark-cards"></div>
       <div class="table-scroll">
-        <table id="tone-table" class="tone-table"></table>
+        <table id="mark-table" class="tone-table mark-table"></table>
       </div>
-      <div id="tone-detail" class="detail detail-sticky" aria-live="polite" hidden></div>
+      <ul class="tone-notes">
+        <li>The mark's name isn't the tone's name: <span lang="th">ไม้โท</span> gives the <em>high</em> tone on a low-class letter (<span lang="th">ค้า</span> kháa), not <span lang="th">เสียงโท</span>.</li>
+        <li><span lang="th">ไม้ตรี</span> and <span lang="th">ไม้จัตวา</span> only appear on middle-class letters.</li>
+        <li>With no mark, the tone comes from the class, vowel length and final sound. See the <a href="consonants.html#tones-h">tone rules table</a>.</li>
+      </ul>
     </section>
 
     <footer>
@@ -70,7 +84,8 @@
   </main>
 
   <script src="consonants-data.js"></script>
+  <script src="tones-data.js"></script>
   <script src="common.js"></script>
-  <script src="consonants.js"></script>
+  <script src="tones.js"></script>
 </body>
 </html>

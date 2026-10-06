@@ -136,6 +136,17 @@ const App = (() => {
     }
   }
 
+  // Small contour drawings of each tone, like the — \ ^ / v marks on a tone chart.
+  const TONE_PATHS = {
+    mid: 'M3 7 H17',
+    low: 'M3 3 L17 11',
+    falling: 'M3 12 L10 3 L17 12',
+    high: 'M3 11 L17 3',
+    rising: 'M3 3 L10 12 L17 3',
+  };
+  const toneIcon = (tone) =>
+    `<svg class="tone-icon" viewBox="0 0 20 14" aria-hidden="true"><path d="${TONE_PATHS[tone]}"/></svg>`;
+
   function button(html, onClick, cls = '') {
     const b = document.createElement('button');
     b.type = 'button';
@@ -182,5 +193,5 @@ const App = (() => {
   }));
   syncFontUI();
 
-  return { register, onSelect, select, playFile, playSequence, button, remember, recall, restorePosition };
+  return { register, onSelect, select, playFile, playSequence, button, toneIcon, remember, recall, restorePosition };
 })();
