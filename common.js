@@ -163,7 +163,7 @@ const App = (() => {
     if (!sfxOn || !audio) return Promise.resolve();
     audio.currentTime = 0;
     return new Promise((resolve) => {
-      const timer = setTimeout(finish, 1500); // don't hold up the word if `ended` never fires
+      const timer = setTimeout(finish, 3000); // don't hold up the word if `ended` never fires
       function finish() {
         clearTimeout(timer);
         audio.onended = audio.onerror = null;

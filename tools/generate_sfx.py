@@ -17,7 +17,7 @@ RATE = 22050
 
 def bell(freq, length):
     """One bell strike: inharmonic partials, the higher ones dying away faster."""
-    partials = [(1.0, 1.0, 3.0), (2.0, 0.55, 5.0), (2.76, 0.3, 7.0), (5.4, 0.15, 11.0)]  # ratio, level, decay
+    partials = [(1.0, 1.0, 1.6), (2.0, 0.6, 2.8), (2.76, 0.35, 4.5), (5.4, 0.2, 8.0)]  # ratio, level, decay
     out = []
     for n in range(int(length * RATE)):
         t = n / RATE
@@ -55,6 +55,11 @@ def mix(parts, length):
     return track
 
 
+def louder(samples, drive):
+    """Soft-limit so the quieter tail comes up without clipping the attack."""
+    return [math.tanh(drive * v) for v in samples]
+
+
 def save(name, samples, peak):
     top = max(abs(v) for v in samples) or 1.0
     frames = b"".join(struct.pack("<h", int(v / top * peak * 32767)) for v in samples)
@@ -68,6 +73,8 @@ def save(name, samples, peak):
 
 if __name__ == "__main__":
     # "Ding-ding": C6 then E6.
-    save("sfx-right.wav", mix([(0, bell(1046.5, 0.9)), (0.13, bell(1318.5, 0.85))], 1.0), 0.8)
+    bells = mix([(0, bell(1046.5, 1.1)), (0.15, bell(1318.5, 1.05))], 1.2)
+    top = max(abs(v) for v in bells)
+    save("sfx-right.wav", louder([v / top for v in bells], 2.5), 0.95)
     # "Eh-eh": two short buzzes.
     save("sfx-wrong.wav", mix([(0, buzz(0.2)), (0.26, buzz(0.32))], 0.6), 0.7)
