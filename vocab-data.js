@@ -83,6 +83,22 @@ const VOCAB = [
   { id: 'v-nangsue', thai: 'หนังสือ', rom: 'nǎng-sʉ̌ʉ', en: ['book', 'books'] },
   { id: 'v-khian', thai: 'เขียน', rom: 'khǐan', en: ['write', 'to write'] },
   { id: 'v-phasa', thai: 'ภาษา', rom: 'phaa-sǎa', en: ['language'] },
+
+  // Short first-reading words from a handwritten workbook sheet.
+  { id: 'v-ta', thai: 'ตา', rom: 'dtaa', en: ['eye', 'eyes'] },
+  { id: 'v-mi', thai: 'มี', rom: 'mii', en: ['have', 'to have', 'has', 'there is', 'there are'] },
+  { id: 'v-ka', thai: 'กา', rom: 'gaa', en: ['crow', 'crows'] },
+  { id: 'v-a', thai: 'อา', rom: 'aa', en: ['uncle', 'aunt', 'aunt uncle', 'uncle aunt'], hint: "father's younger sibling" },
+  { id: 'v-ngu', thai: 'งู', rom: 'nguu', en: ['snake', 'snakes'] },
+  { id: 'v-pu', thai: 'ปู', rom: 'bpuu', en: ['crab', 'crabs'] },
+  { id: 'v-na', thai: 'นา', rom: 'naa', en: ['field', 'rice field', 'rice paddy', 'paddy', 'paddy field', 'fields'] },
+  { id: 'v-hu', thai: 'หู', rom: 'hǔu', en: ['ear', 'ears'] },
+  { id: 'v-pha', thai: 'พา', rom: 'phaa', en: ['bring', 'take', 'to bring', 'to take', 'take along', 'lead', 'bring along'], hint: 'someone along with you' },
+  { id: 'v-pi', thai: 'ปี', rom: 'bpii', en: ['year', 'years'] },
+  { id: 'v-di', thai: 'ดี', rom: 'dii', en: ['good', 'well', 'nice'] },
+  { id: 'v-ru', thai: 'รู', rom: 'ruu', en: ['hole', 'holes'] },
+  { id: 'v-to', thai: 'โต', rom: 'dtoo', en: ['grow up', 'to grow up', 'grow', 'big', 'grown up'] },
+  { id: 'v-ti', thai: 'ตี', rom: 'dtii', en: ['hit', 'to hit', 'strike', 'beat', 'smack'] },
 ];
 
 // Words that appear inside sentences but aren't vocabulary cards.
