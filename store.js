@@ -8,6 +8,7 @@ const Store = (() => {
 
   let db = null;
   let persistent = true;
+  let guarded = false; // navigator.storage.persist() granted
   let saveTimer = null;
 
   // ---------- IndexedDB (holds the raw .sqlite bytes) ----------
@@ -81,8 +82,20 @@ const Store = (() => {
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'hidden') flush();
     });
+    // Ask the browser not to evict our storage when space runs low. Chrome/Android decide
+    // quietly (installed or often-visited sites get it); Safari mostly ignores it.
+    try {
+      if (navigator.storage && navigator.storage.persist) {
+        guarded = (await navigator.storage.persisted()) || (await navigator.storage.persist());
+      }
+    } catch (e) {}
     return { persistent };
   }
+
+  // Backups: when progress was last exported, and whether there's anything worth backing up.
+  const lastExport = () => getMeta('lastExport', null);
+  const markExported = () => setMeta('lastExport', Date.now());
+  const hasProgress = () => all('SELECT 1 FROM cards LIMIT 1').length > 0;
 
   function scheduleSave() {
     clearTimeout(saveTimer);
@@ -165,5 +178,6 @@ const Store = (() => {
   }
 
   return { open, flush, getCards, saveCard, logReview, getMeta, setMeta, reset, exportBytes, importBytes,
-    get persistent() { return persistent; } };
+    lastExport, markExported, hasProgress,
+    get persistent() { return persistent; }, get guarded() { return guarded; } };
 })();

@@ -340,12 +340,32 @@ const Quiz = (() => {
     window.addEventListener('hashchange', highlightReview);
 
     // ---------- Backup ----------
+    const BACKUP_NUDGE_DAYS = 7;
+
+    // iOS Safari wipes a site's storage after ~7 days without a visit, unless it's on the Home Screen.
+    const iosInBrowser = /iPhone|iPad|iPod/.test(navigator.userAgent) && !navigator.standalone;
+
+    function backupStatus() {
+      if (!Store.hasProgress()) return '';
+      const last = Store.lastExport();
+      const days = last ? Math.floor((Date.now() - last) / 86400000) : null;
+      const parts = [];
+      if (days === null) parts.push('⚠ Not backed up yet. Export a copy to be safe.');
+      else if (days >= BACKUP_NUDGE_DAYS) parts.push(`⚠ Last backup was ${days} days ago. Export a fresh copy.`);
+      else parts.push(`Last backup: ${days === 0 ? 'today' : days === 1 ? 'yesterday' : `${days} days ago`}.`);
+      if (iosInBrowser) parts.push('Tip: Share → Add to Home Screen stops Safari clearing your progress.');
+      else if (!Store.guarded) parts.push('Installing the app (Add to Home Screen) helps the browser keep your progress.');
+      return parts.join(' ');
+    }
+
     function setupBackup() {
       const msg = document.getElementById('backup-msg');
       const say = (t) => { msg.textContent = t; };
       if (!Store.persistent) say('⚠ This browser is blocking storage, so progress will be lost when you close the page. Use Export to keep it.');
+      else say(backupStatus());
 
       document.getElementById('export-btn').addEventListener('click', () => {
+        Store.markExported(); // before exporting, so the file carries its own backup date
         const blob = new Blob([Store.exportBytes()], { type: 'application/x-sqlite3' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
@@ -365,7 +385,7 @@ const Quiz = (() => {
         try {
           await Store.importBytes(await f.arrayBuffer());
           stored = Store.getCards(`${kind}:`);
-          say('Progress imported.');
+          say(`Progress imported. ${backupStatus()}`);
           startSession();
         } catch (e) {
           say(e.message);

@@ -16,6 +16,9 @@ Interactive charts for learning Thai pronunciation, with audio.
 
 Quiz progress lives in a SQLite database in the browser (sql.js, persisted to IndexedDB),
 so it survives closing the page. Export/import moves the `.sqlite` file between devices.
+The app asks the browser for persistent storage, and the quiz pages show when progress was last
+exported, nudging after 7 days (and suggesting Add to Home Screen, which stops iOS Safari's
+7-day storage wipe).
 Each page also remembers where you were (scroll position, selected sound, the card you're on
 and what you've typed) in `localStorage`, so switching tabs doesn't lose your place.
 
