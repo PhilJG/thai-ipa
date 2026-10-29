@@ -35,6 +35,7 @@ const Quiz = (() => {
       const [, itemId, dir] = id.split(':');
       return { item: byId.get(itemId), dir };
     };
+    const siblingOf = (id) => id.replace(/:(te|et)$/, (_, d) => (d === 'te' ? ':et' : ':te'));
     const allIds = () => items.flatMap((i) => DIR_SETTINGS[dirSetting].map((d) => cardId(i, d)));
     const playItem = (item) => App.playFile(item.id, item.thai, null);
 
@@ -85,9 +86,9 @@ const Quiz = (() => {
       if (practice) {
         queue = ids.filter((id) => stored.has(id)).sort(() => Math.random() - 0.5);
       } else {
-        queue = SRS.buildSession(ids, stored, newLimit).queue;
+        queue = SRS.buildSession(ids, stored, newLimit, siblingOf).queue;
       }
-      session = { queue, practice, answered: 0, firstTry: 0, seen: new Set() };
+      session = { queue, practice, answered: 0, firstTry: 0, seen: new Set(), requeues: {} };
       renderStats();
       renderList();
       next();
@@ -115,7 +116,7 @@ const Quiz = (() => {
       const c = current;
       App.remember('session', {
         ts: Date.now(), dirs: dirSetting, practice: session.practice, queue: session.queue,
-        answered: session.answered, firstTry: session.firstTry, seen: [...session.seen],
+        answered: session.answered, firstTry: session.firstTry, seen: [...session.seen], requeues: session.requeues,
         current: { id: c.id, hintsUsed: c.hintsUsed, usedHints: c.usedHints, shownHint: c.shownHint,
           draft: c.draft, answer: c.answer, result: c.result },
       });
@@ -126,7 +127,8 @@ const Quiz = (() => {
       if (!s || !s.current || s.dirs !== dirSetting || Date.now() - s.ts > SESSION_TTL) return false;
       const valid = (id) => { const p = parseId(id); return p.item && DIR_LABEL[p.dir]; };
       if (![s.current.id, ...s.queue].every(valid)) return false;
-      session = { queue: s.queue, practice: s.practice, answered: s.answered, firstTry: s.firstTry, seen: new Set(s.seen) };
+      session = { queue: s.queue, practice: s.practice, answered: s.answered, firstTry: s.firstTry, seen: new Set(s.seen),
+        requeues: s.requeues || {} };
       renderStats();
       renderList();
       load(s.current.id, s.current);
@@ -256,22 +258,29 @@ const Quiz = (() => {
 
     function commit(override = false) {
       const g = gradeFor(current.result, override);
-      if (!session.seen.has(current.id)) {
+      const first = !session.seen.has(current.id);
+      if (first) {
         session.seen.add(current.id);
         session.answered++;
         if (g !== 'again') session.firstTry++;
       }
-      let requeue = null;
-      if (session.practice) {
-        if (g === 'again') requeue = 2;
-      } else {
-        const out = SRS.grade(current.card, g);
-        requeue = out.requeue;
-        stored.set(current.id, out.card);
-        Store.saveCard(out.card);
+      // Only the first answer of a session moves a card between boxes; a card answered wrong
+      // stays in box 1 however the repeats go, and just comes back until it's right.
+      let requeue = g === 'again' ? 3 : null;
+      if (!session.practice) {
+        if (first) {
+          const out = SRS.grade(current.card, g);
+          requeue = out.requeue;
+          stored.set(current.id, out.card);
+          Store.saveCard(out.card);
+        }
         Store.logReview(current.id, g, current.answer);
       }
-      if (requeue != null) session.queue.splice(Math.min(requeue, session.queue.length), 0, current.id);
+      const times = session.requeues[current.id] || 0;
+      if (requeue != null && times < SRS.MAX_REQUEUES) {
+        session.requeues[current.id] = times + 1;
+        session.queue.splice(Math.min(requeue, session.queue.length), 0, current.id);
+      }
       renderStats();
       next();
     }
