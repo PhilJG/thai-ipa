@@ -79,3 +79,46 @@ const SPECIALS = [
   { id: 'rue', ipa: 'rɯ', thai: 'ฤ', note: 'vowel letter', ex: { thai: 'ฤดู', rom: 'rɯ́duu', en: 'season' } },
   { id: 'ruue', ipa: 'rɯː', thai: 'ฤๅ', note: 'vowel letter', ex: null },
 ];
+
+// Vowel compass (Stuart Jay Raj): rows are the part of the mouth that shapes the vowel,
+// columns split raised-tongue vowels (short, long, "stretchy" glides out to a, "shrinky" glides
+// in from a) from lowered-tongue ones. `id` is the sound above (its audio and details); `ipa` is
+// SJR's symbol, which differs from the chart's in places (ɨ = ɯ, æ = ɛ, ə = ɤ);
+// `q` is the tongue position(s) for the mouth diagram, as Mouth.forVowel takes them.
+// `echo` cells repeat a vowel that has no separate glide (a can't glide to a).
+const VOWEL_COMPASS = {
+  raised: ['short', 'long', 'stretchy', 'shrinky'],
+  lowered: ['short', 'long'],
+  rows: [
+    {
+      key: 'back', name: 'Back',
+      raised: [{ id: 'a', ipa: 'a', q: ['a'] }, { id: 'aa', ipa: 'aː', q: ['a'] },
+        { id: 'aa', ipa: 'aː', q: ['a'], echo: true }, { id: 'aa', ipa: 'aː', q: ['a'], echo: true }],
+      lowered: [{ id: 'aw', ipa: 'ɔ', q: ['ɔ'], rare: true }, { id: 'aaw', ipa: 'ɔː', q: ['ɔ'] }],
+    },
+    {
+      key: 'top', name: 'Top',
+      raised: [{ id: 'ue', ipa: 'ɨ', q: ['ɨ'] }, { id: 'uue', ipa: 'ɨː', q: ['ɨ'] },
+        { id: 'uuea', ipa: 'ɨːa', q: ['ɨ', 'a'] }, { id: 'ai1', ipa: 'ai', q: ['a', 'i'] }],
+      lowered: [{ id: 'ae', ipa: 'æ', q: ['æ'], rare: true }, { id: 'aae', ipa: 'æː', q: ['æ'] }],
+    },
+    {
+      key: 'front', name: 'Front',
+      raised: [{ id: 'i', ipa: 'i', q: ['i'] }, { id: 'ii', ipa: 'iː', q: ['i'] },
+        { id: 'iia', ipa: 'iːa', q: ['i', 'a'] }, { id: 'ai2', ipa: 'ai', q: ['a', 'i'] }],
+      lowered: [{ id: 'e', ipa: 'e', q: ['e'], rare: true }, { id: 'ee', ipa: 'eː', q: ['e'] }],
+    },
+    {
+      key: 'lips', name: 'Lips',
+      raised: [{ id: 'u', ipa: 'u', q: ['u'] }, { id: 'uu', ipa: 'uː', q: ['u'] },
+        { id: 'uua', ipa: 'uːa', q: ['u', 'a'] }, { id: 'ao', ipa: 'au', q: ['a', 'u'] }],
+      lowered: [{ id: 'o', ipa: 'o', q: ['o'], rare: true }, { id: 'oo', ipa: 'oː', q: ['o'] }],
+    },
+  ],
+  // Bottom line: อำ under the raised short column, the neutral schwa under the lowered pair.
+  am: { id: 'am', ipa: 'am', q: ['a', 'm'] },
+  schwa: [{ id: 'oe', ipa: 'ə', q: ['ə'] }, { id: 'ooe', ipa: 'əː', q: ['ə'] }],
+};
+
+// Tongue positions for sounds that aren't on the compass.
+const EXTRA_VOWEL_POSITIONS = { ia: ['i', 'a'], uea: ['ɨ', 'a'], ua: ['u', 'a'], rue: ['ɨ'], ruue: ['ɨ'] };

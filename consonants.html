@@ -53,8 +53,35 @@
     </header>
 
     <section aria-labelledby="classes-h">
-      <h2 id="classes-h" class="visually-hidden">Consonants by class</h2>
-      <div id="classes"></div>
+      <h2 id="classes-h" class="visually-hidden">Consonants</h2>
+      <div class="view-bar">
+        <div class="segmented" role="group" aria-label="Layout">
+          <button type="button" data-view="compass">Compass</button>
+          <button type="button" data-view="classes">By class</button>
+        </div>
+      </div>
+      <div id="classes" hidden></div>
+      <div id="compass">
+        <p class="hint">Stuart Jay Raj's consonant compass: rows are where in the mouth the sound is made, columns the kind of sound.
+          Colour shows where Thai says it today: <span class="place-tag at-guttural">guttural</span> <span class="place-tag at-palatal">palatal</span>
+          <span class="place-tag at-dental">dental</span> <span class="place-tag at-labial">labial</span> <span class="place-tag at-deep">throat</span>.
+          A purple or pink border means the letter began in another row.</p>
+        <div class="class-bar">
+          <span class="class-bar-label" id="class-label">Consonant classes</span>
+          <div class="segmented" role="group" aria-labelledby="class-label">
+            <button type="button" data-cls="none">None</button>
+            <button type="button" data-cls="high">High</button>
+            <button type="button" data-cls="mid">Mid</button>
+            <button type="button" data-cls="low">Low</button>
+          </div>
+        </div>
+        <details class="class-desc">
+          <summary>Read class description</summary>
+          <p id="class-note"></p>
+          <a href="#tones-h">See tones ↓</a>
+        </details>
+        <div class="compass-scroll" id="compass-scroll"></div>
+      </div>
       <div id="letter-detail" class="detail detail-sticky" aria-live="polite" hidden></div>
     </section>
 
@@ -74,6 +101,7 @@
   </main>
 
   <script src="consonants-data.js"></script>
+  <script src="mouth.js"></script>
   <script src="common.js"></script>
   <script src="consonants.js"></script>
 </body>

@@ -46,14 +46,19 @@
   });
 
   function renderDetail({ sound, length, group }) {
-    detail.className = `detail ${length ? `is-${length}` : ''}`;
+    detail.hidden = false;
+    detail.className = `detail detail-sticky ${length ? `is-${length}` : ''}`;
     const meta = [length, group && group.name, sound.note].filter(Boolean).join(' · ');
+    const where = positions[sound.id];
+    const mouth = where && Mouth.forVowel(where);
     detail.innerHTML = `
+      ${mouth ? `<div class="detail-mouth">${Mouth.svg(mouth)}</div>` : ''}
       <div class="detail-head">
         <span class="detail-thai" lang="th">${sound.thai}</span>
         <span class="detail-ipa">[${sound.ipa}]</span>
       </div>
       <p class="detail-meta">${meta}</p>
+      ${mouth ? `<p class="mouth-caption">${Mouth.caption(mouth)}</p>` : ''}
       <div class="actions"></div>`;
     const actions = detail.querySelector('.actions');
     actions.append(button('▶ Play', () => playSound(sound)));
@@ -151,6 +156,56 @@
     }
   }
 
+  // ---------- Vowel compass ----------
+  // SJR's column symbols: short ⊣, long ⌐ trailing off, stretchy (glides out), shrinky (glides in).
+  const COLUMN_ICONS = {
+    short: '<path d="M8 20 H22 M22 4 V36"/>',
+    long: '<path d="M2 14 H30 Q37 14 40 20"/>',
+    stretchy: '<path d="M4 16 L20 32 L36 16"/><path d="M12 16 A9 9 0 1 1 28 14"/><path d="M24 10 L28 15 L32 10"/>',
+    shrinky: '<path d="M12 4 L20 24 L28 4"/><path d="M10 14 V28 Q10 34 16 34 H24 Q30 34 30 28 V14"/>',
+  };
+
+  function drawCompass() {
+    const grid = document.getElementById('vowel-compass');
+    const head = (name) => `<span class="vc-col"><svg viewBox="0 0 42 38" aria-hidden="true">${COLUMN_ICONS[name]}</svg>${name}</span>`;
+    grid.innerHTML = `
+      <span></span><span class="vc-group" style="grid-column: span 4">Raised tongue</span><span class="vc-divider" style="grid-row: span 6"></span><span class="vc-group" style="grid-column: span 2">Lowered tongue</span>
+      <span></span>${VOWEL_COMPASS.raised.map(head).join('')}${VOWEL_COMPASS.lowered.map(head).join('')}`;
+    for (const row of VOWEL_COMPASS.rows) {
+      grid.insertAdjacentHTML('beforeend', `<span class="vc-row vc-${row.key}">${row.name}</span>`);
+      for (const cell of [...row.raised, ...row.lowered]) grid.append(compassCell(cell));
+    }
+    // Bottom line: อำ, then the schwa pair under the lowered columns.
+    grid.insertAdjacentHTML('beforeend', '<span class="vc-row vc-divider-row"></span>');
+    grid.append(compassCell(VOWEL_COMPASS.am));
+    grid.insertAdjacentHTML('beforeend', '<span class="vc-schwa-label" style="grid-column: span 4">Neutral ‘schwa’ vowel</span>');
+    for (const cell of VOWEL_COMPASS.schwa) grid.append(compassCell(cell, 'vc-schwa'));
+  }
+
+  function compassCell(cell, extra = '') {
+    const { sound, length, group } = soundById[cell.id];
+    const b = button(
+      `<span class="vc-ipa">${cell.ipa}</span><span class="vc-thai" lang="th">${sound.thai}</span>${cell.rare ? '<span class="vc-rare">rare</span>' : ''}`,
+      () => select(cell.id),
+      `vc-cell${cell.echo ? ' echo' : ''}${cell.rare ? ' rare' : ''} ${extra}`);
+    b.setAttribute('aria-label', `${cell.ipa}, ${sound.thai}${cell.rare ? ', rare' : ''}`);
+    register(cell.id, { sound, length, group }, b);
+    return b;
+  }
+
+  // Every sound by id, with its length and pair, and where the tongue goes for it.
+  const soundById = {};
+  for (const group of [...MONOPHTHONGS, ...DIPHTHONGS]) {
+    soundById[group.short.id] = { sound: group.short, length: 'short', group };
+    soundById[group.long.id] = { sound: group.long, length: 'long', group };
+  }
+  for (const sound of SPECIALS) soundById[sound.id] = { sound, length: null, group: null };
+
+  const positions = { ...EXTRA_VOWEL_POSITIONS };
+  for (const row of VOWEL_COMPASS.rows) for (const c of [...row.raised, ...row.lowered]) positions[c.id] ||= c.q;
+  for (const c of [VOWEL_COMPASS.am, ...VOWEL_COMPASS.schwa]) positions[c.id] = c.q;
+
+  drawCompass();
   drawChart();
   drawCards();
   App.restorePosition();
