@@ -13,6 +13,12 @@ Interactive charts for learning Thai pronunciation, with audio.
   wrong ones (switch off with "Sound effects").
 - **Sentences** (`sentences.html`): translate the workbook and everyday-verb sentences both ways, with hints
   (word bank, word-by-word gloss, pronunciation, audio).
+- **Progress** (`progress.html`): charts of your quiz progress: learned / learning / not started
+  and your daily streak, cards per Leitner box, answers per day (right / with a hint / wrong),
+  reviews coming up over the next week, first-try accuracy by week, and your weak spots.
+  Hover or tap a bar for its numbers; each chart has a "Show as table" view.
+
+On phones, "Menu button on phones" (in any page's footer) folds the tabs into a ☰ menu.
 
 Quiz progress lives in a SQLite database in the browser (sql.js, persisted to IndexedDB),
 so it survives closing the page. Export/import moves the `.sqlite` file between devices.
@@ -27,7 +33,8 @@ Live at: https://philjg.github.io/thai-ipa/
 ## Files
 - `index.html` + `vowels.js`, `consonants.html` + `consonants.js`, `tones.html` + `tones.js` – the chart pages (no build step)
 - `words.html` + `words.js`, `sentences.html` + `sentences.js` – the quiz pages
-- `common.js` – shared audio playback, selection, theme and Thai font pickers
+- `progress.html` + `progress.js` – the Progress page; `charts.js` – its small SVG charts
+- `common.js` – shared audio playback, selection, menu button, theme and Thai font pickers
 - `quiz.js` – shared quiz UI; `srs.js` – spaced-repetition scheduling;
   `check.js` – answer checking; `store.js` – SQLite storage
 - `lib/` – vendored sql.js (SQLite compiled to WebAssembly, MIT licence)
