@@ -5,6 +5,19 @@
   const toneDetail = document.getElementById('tone-detail');
   const classByKey = Object.fromEntries(CONSONANT_CLASSES.map((c) => [c.key, c]));
   const columnByKey = Object.fromEntries(TONE_COLUMNS.map((c) => [c.key, c]));
+  const letterByThai = Object.fromEntries(CONSONANTS.map((c) => [c.thai, c]));
+
+  // Where each letter sits on the compass: thai -> { place, type }.
+  const compassSpot = {};
+  for (const table of COMPASS) {
+    for (const row of table.rows) {
+      row.cells.forEach((cell, i) => {
+        for (const t of cell.split(' ').filter(Boolean)) {
+          compassSpot[t] = { place: COMPASS_PLACES[row.place], type: table.columns[i] };
+        }
+      });
+    }
+  }
 
   const playLetter = (c) => playFile(c.id, c.say, c.id);
   const playSyllable = (s) => playFile(s.id, s.thai, s.id);
@@ -32,17 +45,115 @@
           <span class="count">${letters.filter((c) => !c.obsolete).length} letters</span></h3>
         <div class="letters"></div>`;
       const grid = block.querySelector('.letters');
-      for (const c of letters) {
-        const b = button(
-          `<span class="glyph" lang="th">${c.thai}</span><span class="tile-ipa">${c.initial}</span>`,
-          () => select(c.id),
-          `letter-tile${c.obsolete ? ' obsolete' : ''}`);
-        b.setAttribute('aria-label', `${c.thai}, ${c.rom}, ${c.en}, ${cls.name}`);
-        register(c.id, { kind: 'letter', letter: c }, b);
-        grid.append(b);
-      }
+      for (const c of letters) grid.append(letterTile(c));
       wrap.append(block);
     }
+  }
+
+  function letterTile(c) {
+    const b = button(
+      `<span class="glyph" lang="th">${c.thai}</span><span class="tile-ipa">${c.initial}</span>`,
+      () => select(c.id),
+      `letter-tile cls-${c.cls}${c.obsolete ? ' obsolete' : ''}`);
+    b.setAttribute('aria-label', `${c.thai}, ${c.rom}, ${c.en}, ${classByKey[c.cls].name}`);
+    register(c.id, { kind: 'letter', letter: c }, b);
+    return b;
+  }
+
+  // ---------- Consonant compass ----------
+  function drawCompass() {
+    const wrap = document.getElementById('compass');
+    for (const table of COMPASS) {
+      const scroll = document.createElement('div');
+      scroll.className = 'table-scroll compass-scroll';
+      scroll.innerHTML = `
+        <table class="compass-table">
+          <thead><tr><th class="corner"></th>${table.columns.map((c) => `<th scope="col">${c}</th>`).join('')}</tr></thead>
+          <tbody></tbody>
+        </table>`;
+      const body = scroll.querySelector('tbody');
+      for (const row of table.rows) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<th scope="row" class="row-head">${COMPASS_PLACES[row.place]}</th>`;
+        for (const cell of row.cells) {
+          const td = document.createElement('td');
+          for (const t of cell.split(' ').filter(Boolean)) td.append(letterTile(letterByThai[t]));
+          tr.append(td);
+        }
+        body.append(tr);
+      }
+      wrap.append(scroll);
+    }
+  }
+
+  // ---------- Layout and class filter ----------
+  const letterSection = document.getElementById('classes').parentElement;
+
+  function setupViewBar() {
+    const views = { classes: document.getElementById('classes'), compass: document.getElementById('compass') };
+    const viewButtons = document.querySelectorAll('[data-view]');
+    const filterButtons = document.querySelectorAll('[data-cls]');
+
+    const showView = (view) => {
+      for (const [key, el] of Object.entries(views)) el.hidden = key !== view;
+      viewButtons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.view === view)));
+      App.remember('view', view);
+    };
+    const showClass = (cls) => {
+      letterSection.dataset.filter = cls;
+      filterButtons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.cls === cls)));
+      App.remember('filter', cls);
+    };
+
+    viewButtons.forEach((b) => b.addEventListener('click', () => showView(b.dataset.view)));
+    filterButtons.forEach((b) => b.addEventListener('click', () => showClass(b.dataset.cls)));
+    showView(App.recall('view', 'classes'));
+    showClass(App.recall('filter', 'all'));
+  }
+
+  // ---------- Memory aids ----------
+  // Your own rewrites of the shape memory aids, keyed by letter.
+  const SHAPES_KEY = 'letterShapes';
+  let myShapes = {};
+  try { myShapes = JSON.parse(localStorage.getItem(SHAPES_KEY)) || {}; } catch (e) {}
+
+  function saveShape(thai, text) {
+    if (text) myShapes[thai] = text;
+    else delete myShapes[thai];
+    try { localStorage.setItem(SHAPES_KEY, JSON.stringify(myShapes)); } catch (e) {}
+  }
+
+  const shapeFor = (c) => myShapes[c.thai] || LETTER_ART[c.thai].shape;
+
+  function drawShape(c, box) {
+    const edited = c.thai in myShapes;
+    box.innerHTML = `<span class="shape-label">Memory aid${edited ? ' (yours)' : ''}</span>
+      <span class="shape-text"></span>`;
+    box.querySelector('.shape-text').textContent = shapeFor(c);
+    const tools = document.createElement('span');
+    tools.className = 'shape-tools';
+    tools.append(button('Edit', () => editShape(c, box), 'small'));
+    if (edited) tools.append(button('Reset', () => { saveShape(c.thai, ''); drawShape(c, box); }, 'small'));
+    box.append(tools);
+  }
+
+  function editShape(c, box) {
+    box.innerHTML = '<label class="shape-label" for="shape-input">Memory aid</label>';
+    const input = document.createElement('textarea');
+    input.id = 'shape-input';
+    input.rows = 3;
+    input.value = shapeFor(c);
+    const tools = document.createElement('span');
+    tools.className = 'shape-tools';
+    tools.append(
+      button('Save', () => {
+        const text = input.value.trim();
+        saveShape(c.thai, text === LETTER_ART[c.thai].shape ? '' : text);
+        drawShape(c, box);
+      }, 'small'),
+      button('Cancel', () => drawShape(c, box), 'small'));
+    box.append(input, tools);
+    input.focus();
   }
 
   function renderLetter(c) {
@@ -50,15 +161,20 @@
     letterDetail.hidden = false;
     letterDetail.className = `detail detail-sticky cls-${c.cls}`;
     const final = c.final ? `final [${c.final}]` : 'not used as a final';
+    const spot = compassSpot[c.thai];
     letterDetail.innerHTML = `
       <div class="detail-head">
         <span class="detail-thai" lang="th">${c.thai}</span>
+        <span class="detail-pic" aria-hidden="true">${LETTER_ART[c.thai].pic}</span>
         <span class="detail-name"><span lang="th">${c.say}</span>
           <span class="detail-rom">${c.rom} · ${c.en}</span></span>
       </div>
       <p class="detail-meta"><span class="class-badge">${cls.name}</span>
-        initial [${c.initial}] · ${final}${c.obsolete ? ' · obsolete, no longer used' : ''}</p>
+        initial [${c.initial}] · ${final}${c.obsolete ? ' · obsolete, no longer used' : ''}
+        <br>Compass: ${spot.place.toLowerCase()}, ${spot.type.toLowerCase()}</p>
+      <p class="shape"></p>
       <div class="actions"></div>`;
+    drawShape(c, letterDetail.querySelector('.shape'));
     letterDetail.querySelector('.actions').append(button('▶ Play name', () => playLetter(c)));
   }
 
@@ -139,6 +255,8 @@
   }
 
   drawClasses();
+  drawCompass();
+  setupViewBar();
   drawToneTable();
   App.restorePosition();
 })();

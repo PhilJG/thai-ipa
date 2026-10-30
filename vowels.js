@@ -151,7 +151,33 @@
     }
   }
 
+  // ---------- Vowel matrix ----------
+  function drawMatrix() {
+    const byId = {};
+    for (const group of [...MONOPHTHONGS, ...DIPHTHONGS]) {
+      byId[group.short.id] = { sound: group.short, length: 'short', group };
+      byId[group.long.id] = { sound: group.long, length: 'long', group };
+    }
+    const table = document.getElementById('vowel-matrix');
+    table.innerHTML = '<thead><tr><th class="corner"></th><th scope="col">Short</th><th scope="col">Long</th></tr></thead><tbody></tbody>';
+    const body = table.querySelector('tbody');
+    for (const row of VOWEL_MATRIX) {
+      row.pairs.forEach((pair, i) => {
+        const tr = document.createElement('tr');
+        if (i === 0) tr.innerHTML = `<th scope="rowgroup" rowspan="${row.pairs.length}" class="row-head">${row.name}</th>`;
+        for (const id of pair) {
+          const { sound, length, group } = byId[id];
+          const td = document.createElement('td');
+          td.append(chip(sound, length, group));
+          tr.append(td);
+        }
+        body.append(tr);
+      });
+    }
+  }
+
   drawChart();
+  drawMatrix();
   drawCards();
   App.restorePosition();
 })();

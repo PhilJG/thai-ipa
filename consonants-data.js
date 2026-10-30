@@ -114,3 +114,85 @@ const TONE_TABLE = {
     m2: { id: 't-low-m2', thai: 'ค้า', tone: 'high', ipa: 'kʰaː' },
   },
 };
+
+// Consonant compass (Stuart Jay Raj, crackinglanguage.com/compass): rows are where in the mouth
+// the sound is made, columns the type of sound. Cells list letters by their Thai character.
+const COMPASS_PLACES = {
+  deep: 'Deep throat', guttural: 'Guttural', palatal: 'Palatal',
+  cerebral: 'Cerebral', dental: 'Dental', labial: 'Labial',
+};
+
+const COMPASS = [
+  {
+    columns: ['Stopped', 'Aspirated', 'Voiced', 'Voiced aspirated', 'Nasal'],
+    rows: [
+      { place: 'guttural', cells: ['ก', 'ข ฃ', 'ค ฅ', 'ฆ', 'ง'] },
+      { place: 'palatal', cells: ['จ', 'ฉ', 'ช ซ', 'ฌ', 'ญ'] },
+      { place: 'cerebral', cells: ['ฎ ฏ', 'ฐ', 'ฑ', 'ฒ', 'ณ'] },
+      { place: 'dental', cells: ['ด ต', 'ถ', 'ท', 'ธ', 'น'] },
+      { place: 'labial', cells: ['บ ป', 'ผ ฝ', 'พ ฟ', 'ภ', 'ม'] },
+    ],
+  },
+  {
+    columns: ['Semivowel', 'Sibilant', 'H-aspirate', 'Throat base', 'Others'],
+    rows: [
+      { place: 'deep', cells: ['', '', 'ห', 'อ', ''] },
+      { place: 'palatal', cells: ['ย', 'ศ', '', '', ''] },
+      { place: 'cerebral', cells: ['ร ฮ', 'ษ', '', '', 'ฬ'] },
+      { place: 'dental', cells: ['ล', 'ส', '', '', ''] },
+      { place: 'labial', cells: ['ว', '', '', '', ''] },
+    ],
+  },
+];
+
+// A picture of each letter's keyword (emoji, so there's nothing to license or download) and a
+// memory aid linking the letter's shape to it. The aids are starting points: the page lets you
+// rewrite any of them, and keeps your version on this device.
+const LETTER_ART = {
+  'ก': { pic: '🐔', shape: 'A chicken bending its neck down to peck: the hooked top is its head.' },
+  'จ': { pic: '🍽️', shape: 'A plate tilted towards you, with the little loop as the food in the middle.' },
+  'ฎ': { pic: '👑', shape: 'Like ฏ but with a curl under its foot, the tassel hanging from a dancer\'s headdress.' },
+  'ฏ': { pic: '🔱', shape: 'The zigzag tail under the letter is the sharp point of the elephant goad.' },
+  'ด': { pic: '🧒', shape: 'A child turning their head, with the curl inside the top as a lock of hair.' },
+  'ต': { pic: '🐢', shape: 'ด with a notch on top: the bump of a turtle\'s shell.' },
+  'บ': { pic: '🍃', shape: 'A leaf with the loop at its base and the tall stroke as its stem.' },
+  'ป': { pic: '🐟', shape: 'บ with a stroke sticking up high: a fish\'s tail flicking out of the water.' },
+  'อ': { pic: '🛁', shape: 'A round basin with a little curl for the lip of the tap.' },
+
+  'ข': { pic: '🥚', shape: 'The loop at the top left is an egg sitting in the dip of a nest.' },
+  'ฃ': { pic: '🍾', shape: 'ข with a nick in its top, like the narrow neck of a bottle.' },
+  'ฉ': { pic: '🥁', shape: 'จ with an extra loop on its tail: two little cymbals clashing.' },
+  'ฐ': { pic: '🏛️', shape: 'The curl underneath is the base the letter stands on, like a pedestal.' },
+  'ถ': { pic: '🛍️', shape: 'A sack with its opening tied off in the loop at the bottom.' },
+  'ผ': { pic: '🐝', shape: 'Two humps like a bee\'s wings, with the loop as its body.' },
+  'ฝ': { pic: '🫙', shape: 'ผ with a tall stroke on the right: the handle on top of a lid.' },
+  'ศ': { pic: '🛖', shape: 'A pavilion with a curled spire rising from its roof.' },
+  'ษ': { pic: '🧙', shape: 'A hermit sitting cross-legged, with the stroke inside as his staff.' },
+  'ส': { pic: '🐯', shape: 'A tiger\'s tail curling up over its back.' },
+  'ห': { pic: '🧰', shape: 'Two rounded lids side by side, like the top of a chest.' },
+
+  'ค': { pic: '🐃', shape: 'A buffalo\'s head with the loop as its eye and the curved top as its horn.' },
+  'ฅ': { pic: '🧍', shape: 'ค with a notch on top, like a person with their hand raised.' },
+  'ฆ': { pic: '🔔', shape: 'A bell swinging, its wavy rim ringing at the bottom.' },
+  'ง': { pic: '🐍', shape: 'A snake coiled up with its head raised and curving back.' },
+  'ช': { pic: '🐘', shape: 'ข with a raised tail on the right: the elephant lifting its trunk.' },
+  'ซ': { pic: '⛓️', shape: 'ช with a notch in its head, like one link of a chain.' },
+  'ฌ': { pic: '🌳', shape: 'The widest, most branched letter: a tree spreading out its roots.' },
+  'ญ': { pic: '👩', shape: 'A woman with the flowing hem of her skirt drawn underneath.' },
+  'ฑ': { pic: '👸', shape: 'The wavy top is the crown worn by Queen Montho.' },
+  'ฒ': { pic: '👴', shape: 'An elder bent over, with the loop on top as his head.' },
+  'ณ': { pic: '🧘', shape: 'A seated novice monk, his robe trailing in the loop beside him.' },
+  'ท': { pic: '💂', shape: 'A soldier standing to attention, the loop as his helmet.' },
+  'ธ': { pic: '🚩', shape: 'A flag on its pole, the curl on top flapping in the wind.' },
+  'น': { pic: '🐭', shape: 'A mouse with its tail curling up at the end.' },
+  'พ': { pic: '🏆', shape: 'The three points along the top are the rim of an offering tray.' },
+  'ฟ': { pic: '🦷', shape: 'พ with a tall stroke on the right: one long tooth.' },
+  'ภ': { pic: '⛵', shape: 'The tall curved sail of a junk ship catching the wind.' },
+  'ม': { pic: '🐴', shape: 'A horse\'s head turned to look back, the loop as its eye.' },
+  'ย': { pic: '👹', shape: 'A giant with a big round belly and a curl for a club.' },
+  'ร': { pic: '🛶', shape: 'A boat with a curled prow at the front.' },
+  'ล': { pic: '🐒', shape: 'A monkey hanging by its tail, which curls up at the top.' },
+  'ว': { pic: '💍', shape: 'A ring, its band curving round to the setting at the top.' },
+  'ฬ': { pic: '🪁', shape: 'A kite with its long tail swirling below.' },
+  'ฮ': { pic: '🦉', shape: 'อ with a swirl on its head: an owl turning to look at you.' },
+};

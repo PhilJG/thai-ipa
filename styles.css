@@ -503,3 +503,40 @@ button:disabled { opacity: .45; cursor: default; }
 .tone-notes { margin: 12px 0 0; padding-left: 20px; font-size: .9rem; }
 .tone-notes li { margin-bottom: 6px; }
 .tone-notes a { color: var(--short); }
+
+/* Consonant layout switch, class filter and compass */
+.view-bar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+#class-filter .cls-mid, #class-filter .cls-high, #class-filter .cls-low { color: var(--cls-ink); }
+#class-filter button[aria-pressed="true"] { background: var(--cls-bg, var(--ink)); color: var(--cls-ink, var(--bg)); font-weight: 600; }
+[data-filter="mid"] .class-block:not(.cls-mid),
+[data-filter="high"] .class-block:not(.cls-high),
+[data-filter="low"] .class-block:not(.cls-low) { display: none; }
+[data-filter="mid"] .compass-table .letter-tile:not(.cls-mid),
+[data-filter="high"] .compass-table .letter-tile:not(.cls-high),
+[data-filter="low"] .compass-table .letter-tile:not(.cls-low) { opacity: .15; }
+
+.compass-scroll { margin-bottom: 12px; }
+.compass-table { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 560px; background: var(--surface); font-size: .85rem; }
+.compass-table th, .compass-table td { border-right: 1px solid var(--grid); border-bottom: 1px solid var(--grid); padding: 4px; text-align: center; vertical-align: middle; }
+.compass-table thead th { background: var(--bg); color: var(--muted); font-weight: 600; }
+.compass-table .corner, .compass-table .row-head {
+  position: sticky; left: 0; z-index: 1;
+  width: 92px; min-width: 92px; text-align: left; padding: 8px; background: var(--bg); color: var(--muted);
+}
+.compass-table td { min-width: 80px; }
+.compass-table .letter-tile { display: inline-flex; width: 56px; margin: 2px; background: var(--cls-bg); }
+
+/* Letter keyword picture and memory aid */
+.detail-pic { font-size: 2.6rem; line-height: 1; }
+.shape { margin: 0 0 12px; font-size: .95rem; display: flex; flex-direction: column; gap: 6px; }
+.shape-label { font-size: .75rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.shape textarea { font: inherit; width: 100%; padding: 8px; border: 1.5px solid var(--grid); border-radius: 10px; background: var(--bg); color: var(--ink); resize: vertical; }
+.shape-tools { display: flex; gap: 6px; }
+button.small { min-height: 36px; padding: 4px 12px; font-size: .85rem; }
+
+/* Vowel matrix */
+.vowel-matrix { border-collapse: separate; border-spacing: 0; width: 100%; background: var(--surface); }
+.vowel-matrix th, .vowel-matrix td { border-bottom: 1px solid var(--grid); padding: 6px 8px; text-align: left; vertical-align: middle; }
+.vowel-matrix thead th { background: var(--bg); color: var(--muted); font-weight: 600; font-size: .85rem; }
+.vowel-matrix .row-head { color: var(--muted); font-size: .85rem; font-weight: 600; width: 30%; border-right: 1px solid var(--grid); }
+.vowel-matrix .chip { display: flex; width: 100%; justify-content: space-between; align-items: center; padding: 8px 12px; }

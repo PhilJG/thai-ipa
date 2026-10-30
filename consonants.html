@@ -50,8 +50,23 @@
     </header>
 
     <section aria-labelledby="classes-h">
-      <h2 id="classes-h" class="visually-hidden">Consonants by class</h2>
+      <h2 id="classes-h" class="visually-hidden">Consonants</h2>
+      <div class="view-bar">
+        <div class="segmented" role="group" aria-label="Layout">
+          <button type="button" data-view="classes">By class</button>
+          <button type="button" data-view="compass">Compass</button>
+        </div>
+        <div class="segmented" id="class-filter" role="group" aria-label="Show class">
+          <button type="button" data-cls="all">All</button>
+          <button type="button" data-cls="mid" class="cls-mid">Mid</button>
+          <button type="button" data-cls="high" class="cls-high">High</button>
+          <button type="button" data-cls="low" class="cls-low">Low</button>
+        </div>
+      </div>
       <div id="classes"></div>
+      <div id="compass" hidden>
+        <p class="hint">Stuart Jay Raj's consonant compass: rows are where in the mouth the sound is made, columns the kind of sound. Colour shows the class.</p>
+      </div>
       <div id="letter-detail" class="detail detail-sticky" aria-live="polite" hidden></div>
     </section>
 

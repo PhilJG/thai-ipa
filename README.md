@@ -4,8 +4,12 @@ Interactive charts for learning Thai pronunciation, with audio.
 
 - **Vowels** (`index.html`): IPA vowel trapezoid. Tap a vowel to hear it, see its Thai
   spelling, IPA and an example word. Short vowels are outlined in blue, long filled in orange.
+  Below it, a vowel matrix lists the short/long pairs grouped by mouth shape (Stuart Jay Raj style).
 - **Consonants** (`consonants.html`): all 44 letters grouped by class (middle / high / low)
   with initial and final sounds, plus the tone-rules table with every syllable playable.
+  Switch to the **Compass** layout (Stuart Jay Raj's consonant compass: place of articulation × type)
+  and filter either layout by class. Tapping a letter shows its keyword with a picture and a shape
+  memory aid you can rewrite (saved on the device).
 - **Tones** (`tones.html`): the five tones as pitch contours with their Thai names, words that
   differ only in tone, and the four tone marks with the tone each gives per consonant class.
 - **Words** (`words.html`): spaced-repetition quiz over the workbook vocabulary, numbers 1–10 and everyday verbs; typed answers
@@ -32,7 +36,8 @@ Live at: https://philjg.github.io/thai-ipa/
   `check.js` – answer checking; `store.js` – SQLite storage
 - `lib/` – vendored sql.js (SQLite compiled to WebAssembly, MIT licence)
 - `styles.css` – all styles
-- `data.js` – vowel inventory; `consonants-data.js` – consonants and tone rules;
+- `data.js` – vowel inventory and vowel matrix; `consonants-data.js` – consonants, tone rules,
+  compass layout and keyword pictures / memory aids;
   `tones-data.js` – tone names, tone marks and minimal sets;
   `vocab-data.js` – vocabulary and sentences
 - `audio/` – one mp3 per vowel (`<id>.mp3`) and per example word (`<id>-ex.mp3`)

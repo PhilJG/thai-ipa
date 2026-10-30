@@ -79,3 +79,14 @@ const SPECIALS = [
   { id: 'rue', ipa: 'rɯ', thai: 'ฤ', note: 'vowel letter', ex: { thai: 'ฤดู', rom: 'rɯ́duu', en: 'season' } },
   { id: 'ruue', ipa: 'rɯː', thai: 'ฤๅ', note: 'vowel letter', ex: null },
 ];
+
+// Vowel matrix (Stuart Jay Raj style): short/long pairs grouped by mouth shape.
+// Pairs are [short id, long id] from the lists above.
+// IPA is standard Thai phonology; still to check against SJR's vowel compass.
+const VOWEL_MATRIX = [
+  { name: 'Open throat', pairs: [['a', 'aa']] },
+  { name: 'Back unrounded', pairs: [['ue', 'uue'], ['oe', 'ooe']] },
+  { name: 'Front', pairs: [['i', 'ii'], ['e', 'ee'], ['ae', 'aae']] },
+  { name: 'Lips rounded', pairs: [['u', 'uu'], ['o', 'oo'], ['aw', 'aaw']] },
+  { name: 'Diphthongs', pairs: [['ia', 'iia'], ['uea', 'uuea'], ['ua', 'uua']] },
+];
