@@ -80,6 +80,7 @@ const Check = (() => {
   // English for a word: any accepted meaning; "he/she" style answers are split.
   function englishWord(input, accepted) {
     const parts = input.split(/[\/,;]|\bor\b/).map(normEn).filter(Boolean);
+    if (!parts.length && normEn(input)) parts.push(normEn(input)); // the answer is just "or"
     if (!parts.length) return { ok: false, how: 'empty' };
     const targets = accepted.map(normEn);
     let best = null;
