@@ -121,7 +121,7 @@ const VOCAB = [
   { id: 'v-nong', thai: 'น้อง', rom: 'nórng', en: ['younger sibling', 'younger brother', 'younger sister'] },
   { id: 'v-athit', thai: 'อาทิตย์', rom: 'aa-thít', en: ['week'] },
   { id: 'v-duean', thai: 'เดือน', rom: 'dʉan', en: ['month'] },
-  { id: 'v-pi', thai: 'ปี', rom: 'bpii', en: ['year'] },
+  { id: 'v-pi', thai: 'ปี', rom: 'bpii', en: ['year', 'years'] },
   { id: 'v-ni', thai: 'นี้', rom: 'níi', en: ['this'], hint: 'after a noun, as in วันนี้' },
   { id: 'v-na', thai: 'หน้า', rom: 'nâa', en: ['front', 'in front of', 'next', 'face'], hint: 'in front / next (week)' },
   { id: 'v-rian', thai: 'เรียน', rom: 'rian', en: ['learn', 'to learn', 'study', 'to study'] },
@@ -215,6 +215,19 @@ const VOCAB = [
   { id: 'v-cham', thai: 'ชาม', rom: 'chaam', en: ['bowl', 'bowls'], hint: 'also a classifier' },
   { id: 'v-tomyamkung', thai: 'ต้มยำกุ้ง', rom: 'dtôm-yam-gûng', en: ['tom yum kung', 'tom yum goong', 'tom yum', 'tom yum soup', 'spicy shrimp soup'] },
   { id: 'v-thung', thai: 'ถุง', rom: 'thǔng', en: ['bag', 'bags'], hint: 'also a classifier' },
+
+  // Short first-reading words from a handwritten workbook sheet.
+  { id: 'v-ta', thai: 'ตา', rom: 'dtaa', en: ['eye', 'eyes'] },
+  { id: 'v-ka', thai: 'กา', rom: 'gaa', en: ['crow', 'crows'] },
+  { id: 'v-a', thai: 'อา', rom: 'aa', en: ['uncle', 'aunt', 'aunt uncle', 'uncle aunt'], hint: "father's younger sibling" },
+  { id: 'v-ngu', thai: 'งู', rom: 'nguu', en: ['snake', 'snakes'] },
+  { id: 'v-pu', thai: 'ปู', rom: 'bpuu', en: ['crab', 'crabs'] },
+  { id: 'v-naa', thai: 'นา', rom: 'naa', en: ['field', 'rice field', 'rice paddy', 'paddy', 'paddy field', 'fields'] },
+  { id: 'v-hu', thai: 'หู', rom: 'hǔu', en: ['ear', 'ears'] },
+  { id: 'v-pha', thai: 'พา', rom: 'phaa', en: ['bring', 'take', 'to bring', 'to take', 'take along', 'lead', 'bring along'], hint: 'someone along with you' },
+  { id: 'v-ruu', thai: 'รู', rom: 'ruu', en: ['hole', 'holes'] },
+  { id: 'v-too', thai: 'โต', rom: 'dtoo', en: ['grow up', 'to grow up', 'grow', 'big', 'grown up'] },
+  { id: 'v-ti', thai: 'ตี', rom: 'dtii', en: ['hit', 'to hit', 'strike', 'beat', 'smack'] },
 ];
 
 // Words that appear inside sentences but aren't vocabulary cards.
