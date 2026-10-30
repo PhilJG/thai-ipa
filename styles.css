@@ -21,6 +21,9 @@
   --bad: #b91c1c;
   --bad-bg: #fdecec;
   --rising: #a21caf;
+  /* Chart series (validated for colour-blind separation on each surface) */
+  --c-words: #2a78d6; --c-sentences: #c2410c;
+  --c-right: #2a78d6; --c-hint: #eda100; --c-wrong: #e34948;
   --radius: 12px;
   --thai-font: "Noto Sans Thai Looped";
   color-scheme: light;
@@ -49,6 +52,8 @@
     --bad: #ff8a8a;
     --bad-bg: #3d1d1d;
   --rising: #e879f9;
+  --c-words: #3987e5; --c-sentences: #d95926;
+  --c-right: #3987e5; --c-hint: #c98500; --c-wrong: #d03b3b;
     color-scheme: dark;
   }
 }
@@ -75,6 +80,8 @@
   --bad: #ff8a8a;
   --bad-bg: #3d1d1d;
   --rising: #e879f9;
+  --c-words: #3987e5; --c-sentences: #d95926;
+  --c-right: #3987e5; --c-hint: #c98500; --c-wrong: #d03b3b;
   color-scheme: dark;
 }
 
@@ -137,6 +144,28 @@ main {
 .tab { flex: none; }
 @media (max-width: 640px) { .tab .thai { display: none; } }
 @media (max-width: 440px) { .tab { padding: 10px 7px; font-size: .86rem; } .topnav-inner { gap: 0; } }
+
+/* Menu button: opt-in (data-nav-menu="on"), phones only. Tabs drop down as a list. */
+.nav-menu-btn { display: none; }
+@media (max-width: 640px) {
+  :root[data-nav-menu="on"] .nav-menu-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    min-height: 44px; padding: 8px 14px; border-radius: 10px;
+    background: var(--surface); font-weight: 600;
+  }
+  .nav-menu-icon { font-size: 1.2rem; line-height: 1; }
+  :root[data-nav-menu="on"] .tabs {
+    display: none;
+    position: absolute; top: 100%; left: 0; right: 0;
+    flex-direction: column; gap: 2px;
+    padding: 6px max(12px, env(safe-area-inset-right)) 10px max(12px, env(safe-area-inset-left));
+    background: var(--bg); border-bottom: 1px solid var(--grid);
+    box-shadow: 0 6px 12px rgb(0 0 0 / .12);
+  }
+  :root[data-nav-menu="on"] .topnav.menu-open .tabs { display: flex; }
+  :root[data-nav-menu="on"] .tab { padding: 10px 14px; font-size: 1rem; }
+  :root[data-nav-menu="on"] .tab .thai { display: inline; }
+}
 
 h1 { font-size: 1.5rem; margin: 0 0 4px; }
 .theme-toggle {
@@ -503,3 +532,55 @@ button:disabled { opacity: .45; cursor: default; }
 .tone-notes { margin: 12px 0 0; padding-left: 20px; font-size: .9rem; }
 .tone-notes li { margin-bottom: 6px; }
 .tone-notes a { color: var(--short); }
+
+/* ---------- Progress page ---------- */
+.progress-stats { flex-wrap: wrap; }
+.progress-stats .stat { min-width: 120px; }
+.chart {
+  margin: 16px 0 0; padding: 12px 12px 4px;
+  background: var(--surface); border-radius: var(--radius); box-shadow: 0 1px 3px rgb(0 0 0 / .08);
+}
+.chart-title { font-weight: 600; font-size: .95rem; margin-bottom: 6px; }
+.chart-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: .8rem; color: var(--muted); margin-bottom: 4px; }
+.legend-item { display: inline-flex; align-items: center; gap: 6px; }
+.swatch { display: inline-block; width: 10px; height: 10px; border-radius: 3px; flex: none; }
+.chart-plot { position: relative; }
+.chart svg { display: block; width: 100%; height: auto; overflow: visible; touch-action: manipulation; }
+.chart .grid { stroke: var(--grid); stroke-width: 1; opacity: .5; }
+.chart .baseline { stroke: var(--grid); stroke-width: 1.5; }
+.chart .tick { fill: var(--muted); font-size: 11px; }
+.chart .value { fill: var(--ink); font-size: 11px; font-weight: 600; }
+.chart .line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.chart .dot { stroke: var(--surface); stroke-width: 2; }
+.chart .hit { fill: var(--ink); opacity: 0; cursor: pointer; }
+.chart .hit.on { opacity: .05; }
+.chart-tip {
+  position: absolute; top: 0; transform: translateX(-50%); pointer-events: none; z-index: 2;
+  min-width: 140px; padding: 6px 10px; border-radius: 8px; font-size: .8rem;
+  background: var(--bg); color: var(--ink); border: 1px solid var(--grid); box-shadow: 0 2px 8px rgb(0 0 0 / .15);
+}
+.tip-head { font-weight: 600; margin-bottom: 2px; }
+.tip-row { display: flex; align-items: center; gap: 6px; color: var(--muted); white-space: nowrap; }
+.tip-row b { margin-left: auto; padding-left: 12px; color: var(--ink); }
+.tip-total { border-top: 1px solid var(--grid); margin-top: 3px; padding-top: 3px; }
+.chart-table summary { cursor: pointer; font-size: .8rem; color: var(--muted); padding: 8px 0; }
+.chart-table table, .weak-table { width: 100%; border-collapse: collapse; background: var(--surface); font-size: .85rem; }
+.chart-table th, .chart-table td, .weak-table th, .weak-table td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--grid); }
+.chart-table thead th, .weak-table thead th { font-size: .75rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.weak-table td { vertical-align: middle; }
+.weak-rom { font-size: .8rem; margin-top: 2px; }
+/* The charts scale down on phones; keep their text readable (about 10–11px on screen). */
+@media (max-width: 640px) { .chart .tick, .chart .value { font-size: 18px; } }
+/* Weak spots as small cards on phones: Thai + English left, misses + next review right. */
+@media (max-width: 640px) {
+  .weak-table thead { display: none; }
+  .weak-table tr {
+    display: grid; grid-template-columns: 1fr auto; gap: 2px 12px;
+    grid-template-areas: "thai wrong" "en next" "card card";
+    padding: 8px 10px; border-bottom: 1px solid var(--grid);
+  }
+  .weak-table td { border: 0; padding: 0; }
+  .w-thai { grid-area: thai; } .w-en { grid-area: en; font-weight: 600; } .w-card { grid-area: card; font-size: .8rem; }
+  .w-wrong { grid-area: wrong; text-align: right; } .w-wrong::after { content: " wrong"; color: var(--muted); }
+  .w-next { grid-area: next; text-align: right; font-size: .8rem; }
+}

@@ -194,6 +194,37 @@ const App = (() => {
     return b;
   }
 
+  // ---------- Menu button ----------
+  // Opt-in: on narrow screens the tabs fold into a ☰ button that drops them down as a list.
+  // The pref sets data-nav-menu on <html>; styles.css only applies it below 640px.
+  const nav = document.querySelector('.topnav');
+  const menuBtn = document.getElementById('nav-menu-btn');
+  const menuPref = document.getElementById('nav-menu-pref');
+
+  function setMenuOpen(open) {
+    nav.classList.toggle('menu-open', open);
+    menuBtn.setAttribute('aria-expanded', String(open));
+  }
+
+  if (menuBtn) {
+    const here = document.querySelector('.tab[aria-current="page"]');
+    menuBtn.innerHTML = `<span class="nav-menu-icon" aria-hidden="true">☰</span>${here ? here.firstChild.textContent.trim() : ''}`;
+    menuBtn.addEventListener('click', () => setMenuOpen(!nav.classList.contains('menu-open')));
+    document.addEventListener('click', (e) => { if (!nav.contains(e.target)) setMenuOpen(false); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && nav.classList.contains('menu-open')) { setMenuOpen(false); menuBtn.focus(); }
+    });
+  }
+  if (menuPref) {
+    menuPref.checked = root.dataset.navMenu === 'on';
+    menuPref.addEventListener('change', () => {
+      if (menuPref.checked) root.dataset.navMenu = 'on';
+      else delete root.dataset.navMenu;
+      setMenuOpen(false);
+      try { localStorage.setItem('navMenu', menuPref.checked ? 'on' : 'off'); } catch (e) {}
+    });
+  }
+
   // ---------- Theme ----------
   const themeBtn = document.getElementById('theme-toggle');
   const systemDark = window.matchMedia('(prefers-color-scheme: dark)');

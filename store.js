@@ -147,6 +147,9 @@ const Store = (() => {
       [cardId, Date.now(), grade, answer]);
   }
 
+  // Every logged answer, oldest first (for the Progress page).
+  const reviews = () => all('SELECT card_id, ts, grade FROM reviews ORDER BY ts');
+
   function getMeta(key, fallback) {
     const r = all('SELECT value FROM meta WHERE key = ?', [key]);
     return r.length ? JSON.parse(r[0].value) : fallback;
@@ -177,7 +180,7 @@ const Store = (() => {
     await flush();
   }
 
-  return { open, flush, getCards, saveCard, logReview, getMeta, setMeta, reset, exportBytes, importBytes,
+  return { open, flush, getCards, saveCard, logReview, reviews, getMeta, setMeta, reset, exportBytes, importBytes,
     lastExport, markExported, hasProgress,
     get persistent() { return persistent; }, get guarded() { return guarded; } };
 })();

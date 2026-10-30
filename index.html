@@ -19,18 +19,21 @@
     try {
       const t = localStorage.getItem('theme'); if (t) document.documentElement.dataset.theme = t;
       const f = localStorage.getItem('thaiFont'); if (f) document.documentElement.dataset.thaiFont = f;
+      if (localStorage.getItem('navMenu') === 'on') document.documentElement.dataset.navMenu = 'on';
     } catch (e) {}
   </script>
 </head>
 <body>
   <nav class="topnav" aria-label="Sections">
     <div class="topnav-inner">
-      <div class="tabs">
+      <button type="button" id="nav-menu-btn" class="nav-menu-btn" aria-expanded="false" aria-controls="nav-tabs" aria-label="Menu"></button>
+      <div class="tabs" id="nav-tabs">
         <a class="tab" href="./" aria-current="page">Vowels <span class="thai">สระ</span></a>
         <a class="tab" href="consonants.html">Consonants <span class="thai">พยัญชนะ</span></a>
         <a class="tab" href="tones.html">Tones <span class="thai">วรรณยุกต์</span></a>
         <a class="tab" href="words.html">Words <span class="thai">คำศัพท์</span></a>
         <a class="tab" href="sentences.html">Sentences <span class="thai">ประโยค</span></a>
+        <a class="tab" href="progress.html">Progress <span class="thai">ความคืบหน้า</span></a>
       </div>
       <button type="button" id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode"></button>
     </div>
@@ -70,6 +73,7 @@
 
     <footer>
       <label class="slow-toggle"><input type="checkbox" id="slow"> Slow playback</label>
+      <label class="slow-toggle"><input type="checkbox" id="nav-menu-pref"> Menu button on phones</label>
     </footer>
   </main>
 
