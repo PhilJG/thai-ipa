@@ -116,34 +116,41 @@ const TONE_TABLE = {
 };
 
 // Consonant compass (Stuart Jay Raj, crackinglanguage.com/compass): rows are where in the mouth
-// the sound is made, columns the type of sound. Cells list letters by their Thai character.
+// the sound was made in the Indic alphabet Thai comes from, columns the type of sound. Cells list
+// letters by their Thai character. A tile is coloured by where modern Thai actually says it
+// (`soundsLike`): the cerebral row and ศ have drifted to dental, so they're green, with a border
+// in their original row's colour.
 const COMPASS_PLACES = {
-  deep: 'Deep throat', guttural: 'Guttural', palatal: 'Palatal',
-  cerebral: 'Cerebral', dental: 'Dental', labial: 'Labial',
+  deep: { name: 'Deep throat' },
+  guttural: { name: 'Guttural' },
+  palatal: { name: 'Palatal' },
+  cerebral: { name: 'Cerebral', soundsLike: 'dental' },
+  dental: { name: 'Dental' },
+  labial: { name: 'Labial' },
 };
 
-const COMPASS = [
-  {
-    columns: ['Stopped', 'Aspirated', 'Voiced', 'Voiced aspirated', 'Nasal'],
-    rows: [
-      { place: 'guttural', cells: ['ก', 'ข ฃ', 'ค ฅ', 'ฆ', 'ง'] },
-      { place: 'palatal', cells: ['จ', 'ฉ', 'ช ซ', 'ฌ', 'ญ'] },
-      { place: 'cerebral', cells: ['ฎ ฏ', 'ฐ', 'ฑ', 'ฒ', 'ณ'] },
-      { place: 'dental', cells: ['ด ต', 'ถ', 'ท', 'ธ', 'น'] },
-      { place: 'labial', cells: ['บ ป', 'ผ ฝ', 'พ ฟ', 'ภ', 'ม'] },
-    ],
-  },
-  {
-    columns: ['Semivowel', 'Sibilant', 'H-aspirate', 'Throat base', 'Others'],
-    rows: [
-      { place: 'deep', cells: ['', '', 'ห', 'อ', ''] },
-      { place: 'palatal', cells: ['ย', 'ศ', '', '', ''] },
-      { place: 'cerebral', cells: ['ร ฮ', 'ษ', '', '', 'ฬ'] },
-      { place: 'dental', cells: ['ล', 'ส', '', '', ''] },
-      { place: 'labial', cells: ['ว', '', '', '', ''] },
-    ],
-  },
+const COMPASS_COLUMNS = ['stopped', 'aspirated', 'voiced', 'voiced-aspirated', 'nasal',
+  'semivowel', 'sibilant', 'H-aspirate', 'throat base', 'others'];
+
+const COMPASS_ROWS = [
+  { place: 'deep', cells: ['', '', '', '', '', '', '', 'ห', 'อ', ''] },
+  { place: 'guttural', cells: ['ก', 'ข ฃ', 'ค ฅ', 'ฆ', 'ง', '', '', '', '', ''] },
+  { place: 'palatal', cells: ['จ', 'ฉ', 'ช ซ', 'ฌ', 'ญ', 'ย', 'ศ', '', '', ''] },
+  { place: 'cerebral', cells: ['ฎ ฏ', 'ฐ', 'ฑ', 'ฒ', 'ณ', 'ร ฮ', 'ษ', '', '', 'ฬ'] },
+  { place: 'dental', cells: ['ด ต', 'ถ', 'ท', 'ธ', 'น', 'ล', 'ส', '', '', ''] },
+  { place: 'labial', cells: ['บ ป', 'ผ ฝ', 'พ ฟ', 'ภ', 'ม', 'ว', '', '', '', ''] },
 ];
+
+// Letters coloured differently from the rest of their row.
+const COMPASS_SOUNDS_LIKE = { 'ศ': 'dental' };
+// Sound labels on the compass where it shows more than the letter's usual initial.
+const COMPASS_IPA = { 'ฑ': 'tʰ or d' };
+
+const CLASS_NOTES = {
+  mid: 'Mid class: the "plain" letters. A syllable with no tone mark is mid tone when live (long vowel or ends in ง น ม ย ว) and low tone when dead. They are the only class that can take all four tone marks.',
+  high: 'High class: mostly breathy, aspirated or hissing sounds. Live syllables are rising tone; dead syllables are low tone.',
+  low: 'Low class: the largest class, with a high-class partner for most sounds. Live syllables are mid tone; dead syllables are high (short vowel) or falling (long vowel).',
+};
 
 // A picture of each letter's keyword (emoji, so there's nothing to license or download) and a
 // memory aid linking the letter's shape to it. The aids are starting points: the page lets you

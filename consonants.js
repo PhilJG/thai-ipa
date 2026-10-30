@@ -9,14 +9,12 @@
 
   // Where each letter sits on the compass: thai -> { place, type }.
   const compassSpot = {};
-  for (const table of COMPASS) {
-    for (const row of table.rows) {
-      row.cells.forEach((cell, i) => {
-        for (const t of cell.split(' ').filter(Boolean)) {
-          compassSpot[t] = { place: COMPASS_PLACES[row.place], type: table.columns[i] };
-        }
-      });
-    }
+  for (const row of COMPASS_ROWS) {
+    row.cells.forEach((cell, i) => {
+      for (const t of cell.split(' ').filter(Boolean)) {
+        compassSpot[t] = { place: COMPASS_PLACES[row.place].name, type: COMPASS_COLUMNS[i] };
+      }
+    });
   }
 
   const playLetter = (c) => playFile(c.id, c.say, c.id);
@@ -62,37 +60,40 @@
 
   // ---------- Consonant compass ----------
   function drawCompass() {
-    const wrap = document.getElementById('compass');
-    for (const table of COMPASS) {
-      const scroll = document.createElement('div');
-      scroll.className = 'table-scroll compass-scroll';
-      scroll.innerHTML = `
-        <table class="compass-table">
-          <thead><tr><th class="corner"></th>${table.columns.map((c) => `<th scope="col">${c}</th>`).join('')}</tr></thead>
-          <tbody></tbody>
-        </table>`;
-      const body = scroll.querySelector('tbody');
-      for (const row of table.rows) {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<th scope="row" class="row-head">${COMPASS_PLACES[row.place]}</th>`;
-        for (const cell of row.cells) {
-          const td = document.createElement('td');
-          for (const t of cell.split(' ').filter(Boolean)) td.append(letterTile(letterByThai[t]));
-          tr.append(td);
+    const grid = document.createElement('div');
+    grid.className = 'compass-grid';
+    grid.innerHTML = '<span></span>' + COMPASS_COLUMNS.map((c) => `<span class="compass-col">${c}</span>`).join('');
+    for (const row of COMPASS_ROWS) {
+      grid.insertAdjacentHTML('beforeend', `<span class="compass-row">${COMPASS_PLACES[row.place].name}</span>`);
+      for (const cell of row.cells) {
+        const div = document.createElement('div');
+        const letters = cell.split(' ').filter(Boolean).map((t) => letterByThai[t]);
+        if (letters.length) {
+          const first = letters[0];
+          const soundsLike = COMPASS_SOUNDS_LIKE[first.thai] || COMPASS_PLACES[row.place].soundsLike || row.place;
+          div.className = `compass-cell at-${soundsLike} cls-${first.cls}${soundsLike !== row.place ? ` from-${row.place}` : ''}`;
+          for (const c of letters) {
+            const b = button(
+              `<span class="glyph" lang="th">${c.thai}</span><span class="tile-ipa">/${COMPASS_IPA[c.thai] || c.initial}/</span>`,
+              () => select(c.id),
+              `compass-letter${c.obsolete ? ' obsolete' : ''}`);
+            b.setAttribute('aria-label', `${c.thai}, ${c.rom}, ${c.en}, ${classByKey[c.cls].name}`);
+            register(c.id, { kind: 'letter', letter: c }, b);
+            div.append(b);
+          }
         }
-        body.append(tr);
+        grid.append(div);
       }
-      wrap.append(scroll);
     }
+    document.getElementById('compass-scroll').append(grid);
   }
 
-  // ---------- Layout and class filter ----------
-  const letterSection = document.getElementById('classes').parentElement;
-
+  // ---------- Layout and class highlight ----------
   function setupViewBar() {
     const views = { classes: document.getElementById('classes'), compass: document.getElementById('compass') };
     const viewButtons = document.querySelectorAll('[data-view]');
-    const filterButtons = document.querySelectorAll('[data-cls]');
+    const classButtons = document.querySelectorAll('[data-cls]');
+    const note = document.getElementById('class-note');
 
     const showView = (view) => {
       for (const [key, el] of Object.entries(views)) el.hidden = key !== view;
@@ -100,15 +101,16 @@
       App.remember('view', view);
     };
     const showClass = (cls) => {
-      letterSection.dataset.filter = cls;
-      filterButtons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.cls === cls)));
-      App.remember('filter', cls);
+      views.compass.dataset.highlight = cls;
+      classButtons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.cls === cls)));
+      note.textContent = CLASS_NOTES[cls] || 'Pick a class to light up its letters. The class decides how a syllable is toned.';
+      App.remember('highlight', cls);
     };
 
     viewButtons.forEach((b) => b.addEventListener('click', () => showView(b.dataset.view)));
-    filterButtons.forEach((b) => b.addEventListener('click', () => showClass(b.dataset.cls)));
-    showView(App.recall('view', 'classes'));
-    showClass(App.recall('filter', 'all'));
+    classButtons.forEach((b) => b.addEventListener('click', () => showClass(b.dataset.cls)));
+    showView(App.recall('view', 'compass'));
+    showClass(App.recall('highlight', 'none'));
   }
 
   // ---------- Memory aids ----------
@@ -163,6 +165,7 @@
     const final = c.final ? `final [${c.final}]` : 'not used as a final';
     const spot = compassSpot[c.thai];
     letterDetail.innerHTML = `
+      <div class="detail-mouth">${Mouth.svg(Mouth.forConsonant(c.initial))}</div>
       <div class="detail-head">
         <span class="detail-thai" lang="th">${c.thai}</span>
         <span class="detail-pic" aria-hidden="true">${LETTER_ART[c.thai].pic}</span>
@@ -171,7 +174,8 @@
       </div>
       <p class="detail-meta"><span class="class-badge">${cls.name}</span>
         initial [${c.initial}] · ${final}${c.obsolete ? ' · obsolete, no longer used' : ''}
-        <br>Compass: ${spot.place.toLowerCase()}, ${spot.type.toLowerCase()}</p>
+        <br>Compass: ${spot.place.toLowerCase()}, ${spot.type}</p>
+      <p class="mouth-caption">${Mouth.caption(Mouth.forConsonant(c.initial))}</p>
       <p class="shape"></p>
       <div class="actions"></div>`;
     drawShape(c, letterDetail.querySelector('.shape'));

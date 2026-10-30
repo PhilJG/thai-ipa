@@ -49,20 +49,19 @@
       </div>
     </header>
 
-    <section class="chart-wrap" aria-label="Vowel chart">
-      <div class="axis-labels" aria-hidden="true"><span>front</span><span>central</span><span>back</span></div>
-      <svg id="chart" viewBox="0 0 490 360" role="group" aria-label="Thai monophthongs on the IPA vowel trapezoid"></svg>
+    <section aria-labelledby="compass-h">
+      <h2 id="compass-h">Vowel compass</h2>
+      <p class="hint">Stuart Jay Raj's vowel compass. Rows are the part of the mouth that shapes the vowel; <em>stretchy</em> vowels glide out to a, <em>shrinky</em> ones glide in from a.</p>
+      <div class="vc-scroll">
+        <div id="vowel-compass" class="vowel-compass" role="group" aria-label="Vowel compass"></div>
+      </div>
     </section>
 
-    <section id="detail" class="detail" aria-live="polite">
-      <p class="detail-empty">Select a vowel to see its details.</p>
-    </section>
-
-    <section>
-      <h2>Vowel matrix</h2>
-      <p class="hint">Short and long pairs, grouped by the shape of the mouth.</p>
-      <div class="table-scroll">
-        <table id="vowel-matrix" class="vowel-matrix"></table>
+    <section aria-labelledby="chart-h">
+      <h2 id="chart-h">IPA vowel chart</h2>
+      <div class="chart-wrap">
+        <div class="axis-labels" aria-hidden="true"><span>front</span><span>central</span><span>back</span></div>
+        <svg id="chart" viewBox="0 0 490 360" role="group" aria-label="Thai monophthongs on the IPA vowel trapezoid"></svg>
       </div>
     </section>
 
@@ -76,12 +75,15 @@
       <div id="specials" class="cards"></div>
     </section>
 
+    <section id="detail" class="detail detail-sticky" aria-live="polite" hidden></section>
+
     <footer>
       <label class="slow-toggle"><input type="checkbox" id="slow"> Slow playback</label>
     </footer>
   </main>
 
   <script src="data.js"></script>
+  <script src="mouth.js"></script>
   <script src="common.js"></script>
   <script src="vowels.js"></script>
 </body>
