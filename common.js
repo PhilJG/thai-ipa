@@ -65,6 +65,44 @@ const App = (() => {
     if (entry) entry.els.forEach((el) => el.classList.toggle('playing', on));
   }
 
+  function deselect() {
+    if (selectedId) {
+      registry.get(selectedId).els.forEach((el) => el.classList.remove('selected'));
+      selectedId = null;
+    }
+    remember('selected', undefined);
+  }
+
+  // ---------- Sticky detail panel: close + collapsible "more" section ----------
+  // A mouth diagram plus caption, memory aid and actions can make a detail panel
+  // taller than a phone screen, permanently covering the compass/chart behind it.
+  // Every page with such a panel gets a close (✕) button and folds that lower
+  // content behind a "Show details" toggle, remembered across pages.
+  const DETAIL_MORE_KEY = 'detailMoreOpen';
+  let moreOpen = false;
+  try { moreOpen = localStorage.getItem(DETAIL_MORE_KEY) === 'on'; } catch (e) {}
+
+  function closeButton(onClose) {
+    const b = button('✕', onClose, 'detail-close');
+    b.setAttribute('aria-label', 'Close');
+    return b;
+  }
+
+  function moreToggle(moreEl) {
+    const sync = () => {
+      moreEl.hidden = !moreOpen;
+      b.setAttribute('aria-expanded', String(moreOpen));
+      b.textContent = moreOpen ? 'Hide details ▴' : 'Show details ▾';
+    };
+    const b = button('', () => {
+      moreOpen = !moreOpen;
+      try { localStorage.setItem(DETAIL_MORE_KEY, moreOpen ? 'on' : 'off'); } catch (e) {}
+      sync();
+    }, 'detail-toggle');
+    sync();
+    return b;
+  }
+
   // ---------- Audio ----------
   const audioCache = new Map();
   let current = null;
@@ -262,5 +300,8 @@ const App = (() => {
   }));
   syncFontUI();
 
-  return { register, onSelect, select, playFile, playSequence, button, toneIcon, sfx, remember, recall, restorePosition };
+  return {
+    register, onSelect, select, deselect, playFile, playSequence, button, toneIcon, sfx,
+    remember, recall, restorePosition, closeButton, moreToggle,
+  };
 })();

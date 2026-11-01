@@ -158,6 +158,11 @@
     input.focus();
   }
 
+  function hideLetter() {
+    letterDetail.hidden = true;
+    App.deselect();
+  }
+
   function renderLetter(c) {
     const cls = classByKey[c.cls];
     letterDetail.hidden = false;
@@ -165,19 +170,25 @@
     const final = c.final ? `final [${c.final}]` : 'not used as a final';
     const spot = compassSpot[c.thai];
     letterDetail.innerHTML = `
-      <div class="detail-mouth">${Mouth.svg(Mouth.forConsonant(c.initial))}</div>
-      <div class="detail-head">
-        <span class="detail-thai" lang="th">${c.thai}</span>
-        <span class="detail-pic" aria-hidden="true">${LETTER_ART[c.thai].pic}</span>
-        <span class="detail-name"><span lang="th">${c.say}</span>
-          <span class="detail-rom">${c.rom} · ${c.en}</span></span>
+      <div class="detail-top">
+        <div class="detail-head">
+          <span class="detail-thai" lang="th">${c.thai}</span>
+          <span class="detail-pic" aria-hidden="true">${LETTER_ART[c.thai].pic}</span>
+          <span class="detail-name"><span lang="th">${c.say}</span>
+            <span class="detail-rom">${c.rom} · ${c.en}</span></span>
+        </div>
       </div>
       <p class="detail-meta"><span class="class-badge">${cls.name}</span>
         initial [${c.initial}] · ${final}${c.obsolete ? ' · obsolete, no longer used' : ''}
         <br>Compass: ${spot.place.toLowerCase()}, ${spot.type}</p>
-      <p class="mouth-caption">${Mouth.caption(Mouth.forConsonant(c.initial))}</p>
-      <p class="shape"></p>
-      <div class="actions"></div>`;
+      <div class="detail-more">
+        <div class="detail-mouth">${Mouth.svg(Mouth.forConsonant(c.initial))}</div>
+        <p class="mouth-caption">${Mouth.caption(Mouth.forConsonant(c.initial))}</p>
+        <p class="shape"></p>
+        <div class="actions"></div>
+      </div>`;
+    letterDetail.querySelector('.detail-top').append(App.closeButton(hideLetter));
+    letterDetail.querySelector('.detail-meta').insertAdjacentElement('afterend', App.moreToggle(letterDetail.querySelector('.detail-more')));
     drawShape(c, letterDetail.querySelector('.shape'));
     letterDetail.querySelector('.actions').append(button('▶ Play name', () => playLetter(c)));
   }

@@ -45,6 +45,11 @@
     if (play) playSound(entry.sound);
   });
 
+  function hideDetail() {
+    detail.hidden = true;
+    App.deselect();
+  }
+
   function renderDetail({ sound, length, group }) {
     detail.hidden = false;
     detail.className = `detail detail-sticky ${length ? `is-${length}` : ''}`;
@@ -52,14 +57,20 @@
     const where = positions[sound.id];
     const mouth = where && Mouth.forVowel(where);
     detail.innerHTML = `
-      ${mouth ? `<div class="detail-mouth">${Mouth.svg(mouth)}</div>` : ''}
-      <div class="detail-head">
-        <span class="detail-thai" lang="th">${sound.thai}</span>
-        <span class="detail-ipa">[${sound.ipa}]</span>
+      <div class="detail-top">
+        <div class="detail-head">
+          <span class="detail-thai" lang="th">${sound.thai}</span>
+          <span class="detail-ipa">[${sound.ipa}]</span>
+        </div>
       </div>
       <p class="detail-meta">${meta}</p>
-      ${mouth ? `<p class="mouth-caption">${Mouth.caption(mouth)}</p>` : ''}
-      <div class="actions"></div>`;
+      <div class="detail-more">
+        ${mouth ? `<div class="detail-mouth">${Mouth.svg(mouth)}</div>` : ''}
+        ${mouth ? `<p class="mouth-caption">${Mouth.caption(mouth)}</p>` : ''}
+        <div class="actions"></div>
+      </div>`;
+    detail.querySelector('.detail-top').append(App.closeButton(hideDetail));
+    detail.querySelector('.detail-meta').insertAdjacentElement('afterend', App.moreToggle(detail.querySelector('.detail-more')));
     const actions = detail.querySelector('.actions');
     actions.append(button('▶ Play', () => playSound(sound)));
     if (sound.ex) {
