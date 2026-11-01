@@ -305,6 +305,19 @@ footer { margin-top: 28px; color: var(--muted); font-size: .9rem; display: flex;
   border-left: 6px solid var(--cls-ink, var(--grid));
   box-shadow: 0 4px 18px rgb(0 0 0 / .18);
 }
+@media (max-width: 640px) { .detail-sticky { max-height: 60vh; overflow-y: auto; } }
+
+.detail-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.detail-close {
+  flex: none; width: 36px; height: 36px; min-height: 36px; padding: 0;
+  display: grid; place-items: center; border-radius: 50%;
+  background: var(--surface); color: var(--muted); font-size: 1rem;
+}
+.detail-toggle {
+  display: inline-flex; min-height: 36px; padding: 4px 12px; margin: 2px 0 10px;
+  font-size: .85rem; color: var(--muted); background: transparent; border-color: transparent;
+}
+.detail-toggle:hover { color: var(--ink); }
 .detail-name { display: flex; flex-direction: column; font-size: 1.15rem; }
 .detail-rom { color: var(--muted); font-size: .9rem; }
 .detail-tone { display: inline-flex; align-items: center; gap: 6px; color: var(--cls-ink); font-weight: 600; }
