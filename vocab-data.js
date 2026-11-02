@@ -228,6 +228,17 @@ const VOCAB = [
   { id: 'v-ruu', thai: 'รู', rom: 'ruu', en: ['hole', 'holes'] },
   { id: 'v-too', thai: 'โต', rom: 'dtoo', en: ['grow up', 'to grow up', 'grow', 'big', 'grown up'] },
   { id: 'v-ti', thai: 'ตี', rom: 'dtii', en: ['hit', 'to hit', 'strike', 'beat', 'smack'] },
+
+  // Recent lesson notes: meals, countries, knowing people, directions.
+  { id: 'v-ginkhaao', thai: 'กินข้าว', rom: 'gin-khâao', en: ['have a meal', 'eat', 'to eat', 'eat rice'] },
+  { id: 'v-jiin', thai: 'จีน', rom: 'jiin', en: ['China'] },
+  { id: 'v-rucak', thai: 'รู้จัก', rom: 'rúu-jàk', en: ['know someone', 'to know someone', 'know', 'recognize', 'be acquainted with'] },
+  { id: 'v-yaangrai', thai: 'อย่างไร', rom: 'yàang-rai', en: ['how'], thAlt: ['อย่างไง'] },
+  { id: 'v-thamngai', thai: 'ทำไง', rom: 'tham-ngai', en: ['how to do it', 'how do you do it', 'how'], hint: 'colloquial, short for ทำอย่างไร' },
+  { id: 'v-khuen', thai: 'ขึ้น', rom: 'khʉ̂n', en: ['up', 'to go up', 'get on', 'get in', 'board'], hint: 'direction / getting on a vehicle' },
+  { id: 'v-long', thai: 'ลง', rom: 'long', en: ['down', 'to go down', 'get off'], hint: 'direction / getting off a vehicle' },
+  { id: 'v-uen', thai: 'อื่น', rom: 'ʉ̀ʉn', en: ['other', 'another', 'else'] },
+  { id: 'v-naaja', thai: 'น่าจะ', rom: 'nâa-jà', en: ['maybe', 'probably', 'should', 'likely'] },
 ];
 
 // Words that appear inside sentences but aren't vocabulary cards.
@@ -235,6 +246,9 @@ const EXTRA_GLOSS = {
   'นี่': { rom: 'nîi', en: 'here / this' },
   'ไม่เป็น': { rom: 'mâi bpen', en: "can't (don't know how)" },
   'ข้าง': { rom: 'khâang', en: 'side (ข้างนอก = outside)' },
+  'หลาย': { rom: 'lǎai', en: 'many / several' },
+  'รถ': { rom: 'rót', en: 'car / vehicle' },
+  'บ้าง': { rom: 'bâang', en: 'some (particle, asking for a list)' },
 };
 
 // Sentences: `words` splits the Thai into vocabulary chunks (word bank + gloss hints).
@@ -243,7 +257,7 @@ const EXTRA_GLOSS = {
 // `thAlt` = other acceptable Thai.
 const SENTENCES = [
   { id: 's-01', thai: 'คุณชอบกินอะไร', rom: 'khun chôrp gin à-rai', words: ['คุณ', 'ชอบ', 'กิน', 'อะไร'], en: ['What do you like to eat?', 'What do you like eating?'], key: [['what'], ['like'], ['eat', 'eating']] },
-  { id: 's-02', thai: 'ฉันชอบกินส้มตำ', rom: 'chǎn chôrp gin sôm tam', words: ['ฉัน', 'ชอบ', 'กิน', 'ส้มตำ'], en: ['I like to eat papaya salad.', 'I like eating papaya salad.', 'I like to eat som tam.', 'I like eating som tam.'], key: [['i'], ['like'], ['papaya salad', 'som tam', 'somtam']] },
+  { id: 's-02', thai: 'ฉันชอบกินส้มตำ', rom: 'chǎn chôrp gin sôm tam', words: ['ฉัน', 'ชอบ', 'กิน', 'ส้มตำ'], en: ['I like to eat papaya salad.', 'I like eating papaya salad.', 'I like to eat som tam.', 'I like eating som tam.'], key: [['i'], ['like'], ['papaya salad', 'som tam', 'somtam']], thAlt: ['ผมชอบกินส้มตำ'] },
   { id: 's-03', thai: 'คุณไปไหนมา', rom: 'khun bpai nǎi maa', words: ['คุณ', 'ไป', 'ไหน', 'มา'], en: ['Where have you been?', 'Where did you go?'], key: [['where'], ['been', 'go', 'went']] },
   { id: 's-04', thai: 'ฉันไปร้านกาแฟมา', rom: 'chǎn bpai ráan gaa-fae maa', words: ['ฉัน', 'ไป', 'ร้านกาแฟ', 'มา'], en: ['I went to the coffee shop.', 'I have been to the coffee shop.', 'I went to the cafe.', 'I have been to the cafe.'], key: [['i'], ['went', 'been', 'go'], ['coffee shop', 'cafe', 'café', 'coffee']] },
   { id: 's-05', thai: 'คุณเป็นคนอะไร', rom: 'khun bpen khon à-rai', words: ['คุณ', 'เป็น', 'คน', 'อะไร'], en: ['What nationality are you?', 'Where are you from?'], key: [['nationality', 'where are you from', 'where you from']] },
@@ -399,4 +413,12 @@ const SENTENCES = [
   { id: 's-143', thai: 'เอาผัดไทยหกจาน', rom: 'ao phàt thai hòk jaan', words: ['เอา', 'ผัดไทย', 'หก', 'จาน'], en: ['Six plates of pad Thai, please.', 'Take six plates of pad Thai.', "I'll have six plates of pad Thai."], key: [['six', '6'], ['pad thai']] },
   { id: 's-144', thai: 'เอาต้มยำกุ้งเจ็ดชาม', rom: 'ao dtôm-yam-gûng jèt chaam', words: ['เอา', 'ต้มยำกุ้ง', 'เจ็ด', 'ชาม'], en: ['Seven bowls of tom yum kung, please.', 'Take seven bowls of tom yum kung.'], key: [['seven', '7'], ['bowl', 'bowls'], ['tom yum']] },
   { id: 's-145', thai: 'เอาต้มยำกุ้งแปดถุง', rom: 'ao dtôm-yam-gûng bpàaet thǔng', words: ['เอา', 'ต้มยำกุ้ง', 'แปด', 'ถุง'], en: ['Eight bags of tom yum kung, please.', 'Take eight bags of tom yum kung.'], key: [['eight', '8'], ['bag', 'bags'], ['tom yum']] },
+  // Recent lesson notes: meals, languages, friends, directions.
+  { id: 's-146', thai: 'ผมชอบกินข้าว', rom: 'phǒm chôrp gin-khâao', words: ['ผม', 'ชอบ', 'กินข้าว'], en: ['I like to eat.', 'I like having a meal.', 'I like eating.'], key: [['i'], ['like'], ['eat', 'eating', 'have a meal']], thAlt: ['ฉันชอบกินข้าว'] },
+  { id: 's-147', thai: 'คุณชอบกินข้าวไหม', rom: 'khun chôrp gin-khâao mǎi', words: ['คุณ', 'ชอบ', 'กินข้าว', 'ไหม'], en: ['Do you like to eat?', 'Do you like having a meal?'], key: [['you'], ['like'], ['eat', 'eating']], avoid: ['which', 'where'] },
+  { id: 's-148', thai: 'คุณชอบกินข้าวอะไร', rom: 'khun chôrp gin-khâao à-rai', words: ['คุณ', 'ชอบ', 'กินข้าว', 'อะไร'], en: ['What do you like to eat?', 'What food do you like to eat?'], key: [['what'], ['like'], ['eat', 'food']] },
+  { id: 's-149', thai: 'คุณพูดภาษาอะไรบ้าง', rom: 'khun phûut phaa-sǎa à-rai bâang', words: ['คุณ', 'พูด', 'ภาษา', 'อะไร', 'บ้าง'], en: ['What languages do you speak?', 'Which languages do you speak?'], key: [['what', 'which'], ['language', 'languages'], ['speak']] },
+  { id: 's-150', thai: 'ผมเรียนภาษาไทยกับ Pond', rom: 'phǒm rian phaa-sǎa thai gàp Pond', words: ['ผม', 'เรียน', 'ภาษา', 'ไทย', 'กับ'], en: ['I study Thai with Pond.', 'I learn Thai with Pond.'], key: [['i'], ['study', 'learn'], ['thai'], ['pond']], thAlt: ['ฉันเรียนภาษาไทยกับ Pond'] },
+  { id: 's-151', thai: 'ผมมีเพื่อนหลายคน', rom: 'phǒm mii phʉ̂an lǎai khon', words: ['ผม', 'มี', 'เพื่อน', 'หลาย', 'คน'], en: ['I have many friends.', 'I have several friends.'], key: [['i'], ['have'], ['many', 'several', 'a lot of'], ['friends']], thAlt: ['ฉันมีเพื่อนหลายคน'] },
+  { id: 's-152', thai: 'คุณขึ้นรถ', rom: 'khun khʉ̂n rót', words: ['คุณ', 'ขึ้น', 'รถ'], en: ['You get in the car.', 'You get on the car.', 'Get in the car.'], key: [['you', 'get in', 'get on'], ['car']] },
 ];
